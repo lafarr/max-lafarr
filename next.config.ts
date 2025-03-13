@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+	images: {
+		domains: ['7x0zshh65t.ufs.sh']
+	},
+	async rewrites() {
+		return await Promise.resolve([
+			{
+				source: '/api/proxy/:path*',
+				destination: 'https://maxlafarr.com/api/:path*',
+			},
+		]);
+	},
 };
 
 export default nextConfig;

@@ -5,6 +5,7 @@ import { Toaster } from "sonner"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import { ConvexClientProvider } from "@/components/convex-client-provider"
 
 // Bold, impactful font for the artist name
 const anton = Anton({
@@ -23,31 +24,55 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Max LaFarr",
   description: "Official website for Max LaFarr",
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'android-chrome-192x192',
+        url: '/android-chrome-192x192.png',
+      },
+      {
+        rel: 'android-chrome-512x512',
+        url: '/android-chrome-512x512.png',
+      },
+    ],
+  },
 }
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
-}>) {
+}>): React.JSX.Element {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
+      <head>
+        <link rel="preconnect" href="https://open.spotify.com" />
+        <link rel="preconnect" href="https://w.soundcloud.com" />
+      </head>
       <body className={`${anton.variable} ${poppins.variable} font-poppins`}>
-        <Navbar />
-        {children}
-        <Footer />
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: "#1a1a1a",
-              color: "#fff",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-            },
-          }}
-        />
+        <ConvexClientProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: "#1a1a1a",
+                color: "#fff",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+              },
+              // Use className instead of trying to set CSS variables
+              className: "custom-toast",
+            }}
+          />
+        </ConvexClientProvider>
       </body>
     </html>
   )
 }
-

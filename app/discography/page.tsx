@@ -1,110 +1,34 @@
-"use client"
+import type React from "react";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { getAlbums } from '@/lib/queries';
+import { FadeUp, SlideIn } from '@/components/animations';
+import { LiveDiscographyContent } from '@/components/discography/live-discography-content';
 
-// Album data from the Ghost Pavilion Spotify
-const albums = [
-  {
-    id: "1",
-    title: "Oblivion",
-    year: "2020",
-    cover: "/album-covers/oblivion.jpg",
-    spotifyId: "0Ij3PxFZDuRxDybNj3qHvO",
-  },
-  {
-    id: "2",
-    title: "Bluebird",
-    year: "2018",
-    cover: "/album-covers/bluebird.jpg",
-    spotifyId: "6Ju2Wv5BcHYsVhQYJ7QoLQ",
-  },
-  {
-    id: "3",
-    title: "Ghost Pavilion",
-    year: "2016",
-    cover: "/album-covers/ghost-pavilion.jpg",
-    spotifyId: "3Yrp8YDfnRzoGnYIUQWLFZ",
-  },
-  {
-    id: "4",
-    title: "Traces",
-    year: "2019",
-    cover: "/album-covers/traces.jpg",
-    spotifyId: "0Ij3PxFZDuRxDybNj3qHvO",
-  },
-  {
-    id: "5",
-    title: "Reflections",
-    year: "2017",
-    cover: "/album-covers/reflections.jpg",
-    spotifyId: "6Ju2Wv5BcHYsVhQYJ7QoLQ",
-  },
-  {
-    id: "6",
-    title: "Echoes",
-    year: "2015",
-    cover: "/album-covers/echoes.jpg",
-    spotifyId: "3Yrp8YDfnRzoGnYIUQWLFZ",
-  },
-]
-
-export default function DiscographyPage() {
-  const [selectedAlbum, setSelectedAlbum] = useState<(typeof albums)[0] | null>(null)
+export default async function DiscographyPage(): Promise<React.JSX.Element> {
+  const albums = await getAlbums();
 
   return (
-    <main className="min-h-screen bg-black text-white py-16">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center">DISCOGRAPHY</h1>
+    <main className="relative min-h-screen overflow-hidden bg-black py-24 text-white md:py-32">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,hsl(38_55%_55%/0.06),transparent_45%),radial-gradient(circle_at_80%_60%,rgba(255,255,255,0.03),transparent_40%)]" />
+      <div className="container relative mx-auto px-4">
+        <div className="relative">
+          <SlideIn direction="left">
+            <p className="mb-3 text-xs uppercase tracking-[0.34em] text-amber-accent/60">Recorded Work</p>
+          </SlideIn>
+          <SlideIn direction="left">
+            <h1 className="artist-name text-5xl md:text-7xl lg:text-8xl">DISCOGRAPHY</h1>
+          </SlideIn>
+          <FadeUp delay={0.15}>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-500 md:text-base">
+              A growing catalog built for headphones, speakers, and the spaces in between. Open any release to listen in full.
+            </p>
+          </FadeUp>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {albums.map((album) => (
-            <Dialog key={album.id}>
-              <DialogTrigger asChild>
-                <div className="cursor-pointer group" onClick={() => setSelectedAlbum(album)}>
-                  <div className="relative aspect-square overflow-hidden">
-                    <Image
-                      src={album.cover || "/placeholder.svg"}
-                      alt={album.title}
-                      fill
-                      className="object-cover grayscale hover:grayscale-0 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-              </DialogTrigger>
-              <DialogContent className="bg-black border-gray-800 text-white max-w-3xl">
-                {selectedAlbum && (
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="relative aspect-square">
-                      <Image
-                        src={selectedAlbum.cover || "/placeholder.svg"}
-                        alt={selectedAlbum.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold mb-2">{selectedAlbum.title}</h2>
-                      <p className="text-gray-400 mb-6">{selectedAlbum.year}</p>
-
-                      <iframe
-                        src={`https://open.spotify.com/embed/album/${selectedAlbum.spotifyId}`}
-                        width="100%"
-                        height="380"
-                        frameBorder="0"
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        className="rounded-md"
-                      ></iframe>
-                    </div>
-                  </div>
-                )}
-              </DialogContent>
-            </Dialog>
-          ))}
+          <div className="mt-14 sm:mt-16">
+            <LiveDiscographyContent initialAlbums={albums} />
+          </div>
         </div>
       </div>
     </main>
-  )
+  );
 }
-
