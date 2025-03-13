@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, Instagram, Youtube } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { FaSpotify } from "react-icons/fa"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,6 +32,24 @@ export default function Navbar() {
             CONTACT
           </Link>
         </nav>
+
+        <div className="hidden md:flex items-center gap-4">
+          <Link
+            href="https://open.spotify.com/artist/48cLxcaQBLsUSBvgiOmEe4"
+            className="hover:text-gray-300 transition-colors"
+          >
+            <FaSpotify className="h-5 w-5" />
+            <span className="sr-only">Spotify</span>
+          </Link>
+          <Link href="https://www.instagram.com/maxlafarrmusic/" target="_blank" className="hover:text-gray-300 transition-colors">
+            <Instagram className="h-5 w-5" />
+            <span className="sr-only">Instagram</span>
+          </Link>
+          <Link href="https://www.youtube.com/@maxlafarrmusic3168" className="hover:text-gray-300 transition-colors">
+            <Youtube className="h-6 w-6" />
+            <span className="sr-only">YouTube</span>
+          </Link>
+        </div>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
