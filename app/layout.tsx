@@ -44,6 +44,8 @@ export default function RootLayout({
               color: "#fff",
               border: "1px solid rgba(255, 255, 255, 0.1)",
             },
+            // Use className instead of trying to set CSS variables
+            className: "custom-toast",
           }}
         />
       </body>

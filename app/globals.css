@@ -108,3 +108,8 @@
   animation-delay: 0.3s;
 }
 
+.custom-toast [data-description],
+.custom-toast [data-sonner-toast] [data-description], 
+.custom-toast .description {
+  color: #9ca3af !important; /* text-gray-300 equivalent */
+}
