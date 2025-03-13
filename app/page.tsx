@@ -1,7 +1,21 @@
+'use client';
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 export default function Home() {
+  const [email, setEmail] = useState("")
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implement newsletter signup logic
+    setSubscribed(true)
+    setEmail("")
+  }
+
   return (
     <main
       className="min-h-screen bg-black text-white relative flex items-center justify-center"
@@ -38,6 +52,36 @@ export default function Home() {
           >
             <Link href="/events">EVENTS</Link>
           </Button>
+        </div>
+
+        <div className="w-full max-w-md mx-auto mt-16 animate-fade-in delay-300">
+          {!subscribed ? (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <p className="text-lg text-gray-300 mb-6">
+                Stay updated with new releases, upcoming shows, and other content
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 rounded-full px-6"
+                />
+                <Button 
+                  type="submit"
+                  className="bg-white text-black hover:bg-gray-200 rounded-full whitespace-nowrap px-8"
+                >
+                  Subscribe
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div className="text-green-400 text-lg animate-fade-in">
+              Thanks for subscribing! Check your email to confirm.
+            </div>
+          )}
         </div>
       </div>
     </main>
