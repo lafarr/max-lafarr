@@ -27,14 +27,14 @@ export default function Home() {
           <Button
             asChild
             size="lg"
-            className="bg-white text-black hover:bg-gray-200 font-medium px-8 py-6 rounded-full text-base"
+            className="bg-white text-black hover:bg-gray-200 font-medium px-12 py-6 rounded-full text-base"
           >
             <Link href="/discography">LISTEN</Link>
           </Button>
           <Button
             asChild
             size="lg"
-            className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-medium px-8 py-6 rounded-full text-base"
+            className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-medium px-12 py-6 rounded-full text-base"
           >
             <Link href="/events">EVENTS</Link>
           </Button>

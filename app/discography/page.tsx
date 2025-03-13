@@ -104,10 +104,108 @@ const albums = [
     cover: "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/23/b7/50/23b750d2-eb81-033c-f308-af24ccb0882e/198015933175.jpg/316x316bb.webp",
     spotifyId: "09TctObtlADg0yHqRy68DB",
   },
+  {
+    id: "15",
+    title: "X",
+    year: "2023",
+    cover: "https://i1.sndcdn.com/artworks-swxZ6ypLnXUIPMDn-Slry7A-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/ten",
+    platform: "soundcloud"
+  },
+  {
+    id: "16",
+    title: "Unanimity",
+    year: "2022",
+    cover: "https://i1.sndcdn.com/artworks-qGTOR074FhvD9LH5-ZYnu7A-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/unanimity",
+    platform: "soundcloud"
+  },
+  {
+    id: "17",
+    title: "Hot Licks!",
+    year: "2022",
+    cover: "https://i1.sndcdn.com/artworks-R8Kf7TbDImfZcgPy-WGbAwg-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/hot-licks",
+    platform: "soundcloud"
+  },
+  {
+    id: "18",
+    title: "Ideas",
+    year: "2022",
+    cover: "https://i1.sndcdn.com/artworks-gh2UV4IA1xbJasaI-ieVmGw-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/ideas",
+    platform: "soundcloud"
+  },
+  {
+    id: "19",
+    title: "Get In The Jar!",
+    year: "2022",
+    cover: "https://i1.sndcdn.com/artworks-yuW39KCRwpqq3wfv-yOwieg-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/get-in-the-jar",
+    platform: "soundcloud"
+  },
+  {
+    id: "20",
+    title: "The Bubblegum Jams",
+    year: "2022",
+    cover: "https://i1.sndcdn.com/artworks-z90iEhi4hH6vh2vE-AZmxiQ-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/the-bubblegum-jams",
+    platform: "soundcloud"
+  },
+  {
+    id: "21",
+    title: "San Dimas",
+    year: "2021",
+    cover: "https://i1.sndcdn.com/artworks-WAyRtwl0hJThauyF-xH1IuQ-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/san-dimas",
+    platform: "soundcloud"
+  },
+  {
+    id: "22",
+    title: "Velocity",
+    year: "2021",
+    cover: "https://i1.sndcdn.com/artworks-X6xYUJ0UB6zVuDhE-ouaseg-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/velocity",
+    platform: "soundcloud"
+  },
+  {
+    id: "23",
+    title: "Clayford’s Wrath Against The 3 1/2",
+    year: "2021",
+    cover: "https://i1.sndcdn.com/artworks-6fp8BvLEjyZUJy6x-oHXPgg-t500x500.jpg",
+    soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/clayfords-wrath-against-the-3",
+    platform: "soundcloud"
+  },
 ]
 
 export default function DiscographyPage() {
   const [selectedAlbum, setSelectedAlbum] = useState<(typeof albums)[0] | null>(null)
+
+  const renderEmbed = (album: (typeof albums)[0]) => {
+    if (album.platform === "soundcloud") {
+      return (
+        <iframe
+          width="100%"
+          height="500"
+          scrolling="no"
+          frameBorder="no"
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(album.soundcloudUrl)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+          className="rounded-md"
+        ></iframe>
+      )
+    }
+    
+    return (
+      <iframe
+        src={`https://open.spotify.com/embed/album/${album.spotifyId}`}
+        width="100%"
+        height="500"
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        className="rounded-md"
+      ></iframe>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-black text-white py-16">
@@ -133,14 +231,7 @@ export default function DiscographyPage() {
                 <DialogTitle className="sr-only">Hello</DialogTitle>
                 {selectedAlbum && (
                   <div className="w-full">
-                    <iframe
-                      src={`https://open.spotify.com/embed/album/${selectedAlbum.spotifyId}`}
-                      width="100%"
-                      height="500"
-                      frameBorder="0"
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      className="rounded-md"
-                    ></iframe>
+                    {renderEmbed(selectedAlbum)}
                   </div>
                 )}
               </DialogContent>
