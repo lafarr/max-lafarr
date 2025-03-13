@@ -37,15 +37,22 @@ export default function Navbar() {
           <Link
             href="https://open.spotify.com/artist/48cLxcaQBLsUSBvgiOmEe4"
             className="hover:text-gray-300 transition-colors"
+            target="_blank"
           >
             <FaSpotify className="h-5 w-5" />
             <span className="sr-only">Spotify</span>
           </Link>
-          <Link href="https://www.instagram.com/maxlafarrmusic/" target="_blank" className="hover:text-gray-300 transition-colors">
+          <Link
+            href="https://www.instagram.com/maxlafarrmusic/"
+            className="hover:text-gray-300 transition-colors"
+            target="_blank">
             <Instagram className="h-5 w-5" />
             <span className="sr-only">Instagram</span>
           </Link>
-          <Link href="https://www.youtube.com/@maxlafarrmusic3168" className="hover:text-gray-300 transition-colors">
+          <Link
+            href="https://www.youtube.com/@maxlafarrmusic3168"
+            className="hover:text-gray-300 transition-colors"
+            target="_blank">
             <Youtube className="h-6 w-6" />
             <span className="sr-only">YouTube</span>
           </Link>
@@ -68,30 +75,30 @@ export default function Navbar() {
               </div>
               <div className="flex-1 flex flex-col items-center justify-center">
                 <nav className="flex flex-col items-center gap-8">
-                  <Link 
-                    href="/" 
-                    onClick={() => setIsOpen(false)} 
+                  <Link
+                    href="/"
+                    onClick={() => setIsOpen(false)}
                     className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                   >
                     HOME
                   </Link>
-                  <Link 
-                    href="/discography" 
-                    onClick={() => setIsOpen(false)} 
+                  <Link
+                    href="/discography"
+                    onClick={() => setIsOpen(false)}
                     className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                   >
                     MUSIC
                   </Link>
-                  <Link 
-                    href="/events" 
-                    onClick={() => setIsOpen(false)} 
+                  <Link
+                    href="/events"
+                    onClick={() => setIsOpen(false)}
                     className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                   >
                     EVENTS
                   </Link>
-                  <Link 
-                    href="/contact" 
-                    onClick={() => setIsOpen(false)} 
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsOpen(false)}
                     className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                   >
                     CONTACT
