@@ -77,12 +77,12 @@ export default function DiscographyPage() {
             <Dialog key={album.id}>
               <DialogTrigger asChild>
                 <div className="cursor-pointer group" onClick={() => setSelectedAlbum(album)}>
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-square overflow-hidden rounded-lg">
                     <Image
                       src={album.cover || "/placeholder.svg"}
                       alt={album.title}
                       fill 
-                      className="object-cover hover:opacity-50 transition-all duration-300 md:scale-[0.835]"
+                      className="object-cover hover:opacity-50 transition-all duration-300 md:scale-[0.835] rounded-lg"
                     />
                   </div>
                 </div>
