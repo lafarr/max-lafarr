@@ -20,7 +20,7 @@ export default function Home() {
         <h1 className="artist-name text-6xl md:text-8xl font-normal leading-none animate-fade-in">MAX LAFARR</h1>
 
         <p className="text-xl md:text-2xl max-w-2xl mx-auto text-gray-200 font-light tracking-wide animate-fade-in delay-100">
-          A little bit of everything.
+          I play a little bit of everything.
         </p>
 
         <div className="flex flex-wrap gap-6 justify-center mt-8 animate-fade-in delay-200">

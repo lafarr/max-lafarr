@@ -87,7 +87,7 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                   >
-                    MUSIC
+                    DISCOGRAPHY
                   </Link>
                   <Link
                     href="/events"
