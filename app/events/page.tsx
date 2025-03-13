@@ -13,42 +13,6 @@ const events = [
     location: "Los Angeles, CA",
     ticketLink: "#",
   },
-  {
-    id: "2",
-    title: "Autumn Tour with The National",
-    date: "November 5, 2024",
-    time: "7:30 PM",
-    venue: "Brooklyn Steel",
-    location: "Brooklyn, NY",
-    ticketLink: "#",
-  },
-  {
-    id: "3",
-    title: "Winter Festival Performance",
-    date: "December 12, 2024",
-    time: "9:00 PM",
-    venue: "The Fillmore",
-    location: "San Francisco, CA",
-    ticketLink: "#",
-  },
-  {
-    id: "4",
-    title: "New Year's Eve Special Show",
-    date: "December 31, 2024",
-    time: "10:00 PM",
-    venue: "Music Hall of Williamsburg",
-    location: "Brooklyn, NY",
-    ticketLink: "#",
-  },
-  {
-    id: "5",
-    title: "European Tour Kickoff",
-    date: "February 10, 2025",
-    time: "8:00 PM",
-    venue: "O2 Academy Brixton",
-    location: "London, UK",
-    ticketLink: "#",
-  },
 ]
 
 export default function EventsPage() {
