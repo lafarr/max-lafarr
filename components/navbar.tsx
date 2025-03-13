@@ -23,7 +23,7 @@ export default function Navbar() {
             HOME
           </Link>
           <Link href="/discography" className="hover:text-gray-300 transition-colors text-sm font-medium">
-            MUSIC
+            DISCOGRAPHY
           </Link>
           <Link href="/events" className="hover:text-gray-300 transition-colors text-sm font-medium">
             EVENTS
