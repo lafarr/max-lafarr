@@ -1,0 +1,97 @@
+import { CalendarDays, MapPin, Clock } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+
+// Sample event data
+const events = [
+  {
+    id: "1",
+    title: "Ghost Pavilion Live at The Echo",
+    date: "October 15, 2024",
+    time: "8:00 PM",
+    venue: "The Echo",
+    location: "Los Angeles, CA",
+    ticketLink: "#",
+  },
+  {
+    id: "2",
+    title: "Autumn Tour with The National",
+    date: "November 5, 2024",
+    time: "7:30 PM",
+    venue: "Brooklyn Steel",
+    location: "Brooklyn, NY",
+    ticketLink: "#",
+  },
+  {
+    id: "3",
+    title: "Winter Festival Performance",
+    date: "December 12, 2024",
+    time: "9:00 PM",
+    venue: "The Fillmore",
+    location: "San Francisco, CA",
+    ticketLink: "#",
+  },
+  {
+    id: "4",
+    title: "New Year's Eve Special Show",
+    date: "December 31, 2024",
+    time: "10:00 PM",
+    venue: "Music Hall of Williamsburg",
+    location: "Brooklyn, NY",
+    ticketLink: "#",
+  },
+  {
+    id: "5",
+    title: "European Tour Kickoff",
+    date: "February 10, 2025",
+    time: "8:00 PM",
+    venue: "O2 Academy Brixton",
+    location: "London, UK",
+    ticketLink: "#",
+  },
+]
+
+export default function EventsPage() {
+  return (
+    <main className="min-h-screen bg-black text-white py-16">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center">UPCOMING EVENTS</h1>
+
+        <div className="grid gap-6 max-w-3xl mx-auto">
+          {events.map((event) => (
+            <Card key={event.id} className="bg-zinc-900 border-zinc-800 text-white">
+              <CardContent className="p-6">
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <h2 className="text-xl font-bold mb-3">{event.title}</h2>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <CalendarDays className="h-4 w-4" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 mb-2">
+                      <Clock className="h-4 w-4" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300">
+                      <MapPin className="h-4 w-4" />
+                      <span>
+                        {event.venue}, {event.location}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-start">
+                    <Button asChild className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8">
+                      <a href={event.ticketLink}>GET TICKETS</a>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </main>
+  )
+}
+
