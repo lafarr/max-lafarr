@@ -1,7 +1,19 @@
-import type { NextConfig } from "next";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+export function middleware(request: NextRequest) {
+	// Only apply to API routes
+	if (request.nextUrl.pathname.startsWith('/api/')) {
+		const response = NextResponse.next();
+
+		response.headers.set('Access-Control-Allow-Origin', '*');
+		response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+		response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+		return response;
+	}
+}
+
+export const config = {
+	matcher: '/api/:path*',
 };
-
-export default nextConfig;
