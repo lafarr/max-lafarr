@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import axios from 'axios';
 
 export default function Home() {
   const [email, setEmail] = useState("")
@@ -11,7 +12,9 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement newsletter signup logic
+    axios.post('http://localhost:3000/api/newsletter', {
+      email: email
+    })
     setSubscribed(true)
     setEmail("")
   }

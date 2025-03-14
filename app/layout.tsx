@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${anton.variable} ${poppins.variable} font-poppins`}>
         <Navbar />
         {children}

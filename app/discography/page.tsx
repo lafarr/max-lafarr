@@ -170,7 +170,7 @@ const albums = [
   },
   {
     id: "23",
-    title: "Clayford’s Wrath Against The 3 1/2",
+    title: "Clayford's Wrath Against The 3 1/2",
     year: "2021",
     cover: "https://i1.sndcdn.com/artworks-6fp8BvLEjyZUJy6x-oHXPgg-t500x500.jpg",
     soundcloudUrl: "https://soundcloud.com/max-lafarr/sets/clayfords-wrath-against-the-3",
@@ -211,6 +211,7 @@ export default function DiscographyPage() {
     <main className="min-h-screen bg-black text-white py-16">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center">DISCOGRAPHY</h1>
+        <p className="text-center text-gray-300 mb-12">Click any album to listen</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-0">
           {albums.map((album) => (
