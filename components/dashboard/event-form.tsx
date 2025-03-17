@@ -17,7 +17,7 @@ interface EventFormProps {
 
 export function EventForm({ eventId }: Readonly<EventFormProps>) {
 	const router = useRouter()
-	const [isLoading, setIsLoading] = useState(true)
+	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
 		location: "",
