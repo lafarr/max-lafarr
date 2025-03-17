@@ -29,6 +29,15 @@ export default function EventsPage() {
 			.catch();
 	}, []);
 
+	function formatDate(date: string) {
+		const dateParts = date.split('-');
+		const year = dateParts[0];
+		let [, month, day] = dateParts;
+		month = month.replace(/^0/, '');
+		day = day.replace(/^0/, '');
+		return `${month}-${day}-${year}`;
+	}
+
 	return (
 		<main className="min-h-screen bg-black text-white py-16">
 			<div className="container mx-auto px-4">
@@ -45,7 +54,7 @@ export default function EventsPage() {
 											<h2 className="text-xl font-bold mb-3">{event.name}</h2>
 											<div className="flex items-center gap-2 text-gray-300 mb-2">
 												<CalendarDays className="h-4 w-4" />
-												<span>{event.date}</span>
+												<span>{formatDate(event.date)}</span>
 											</div>
 											<div className="flex items-center gap-2 text-gray-300 mb-2">
 												<Clock className="h-4 w-4" />
