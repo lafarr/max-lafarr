@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Edit, Loader2, Search, Trash } from "lucide-react"
 import { deleteEvent, getEvents } from "@/lib/actions"
+import { useRouter } from "next/navigation"
 
 interface Event {
 	id?: number;
@@ -20,6 +21,7 @@ export function EventsTable() {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [events, setEvents] = useState<Event[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -85,7 +87,7 @@ export function EventsTable() {
 									<TableCell>
 										<div className="flex items-center gap-2">
 											{/* TODO: Need to change this on click to route to the proper thing */}
-											<Button variant="ghost" size="icon" onClick={() => console.log(`Edit event ${event.id}`)}>
+											<Button variant="ghost" size="icon" onClick={() => router.push(`/admin/events/${event.id}/edit`)}>
 												<Edit className="h-4 w-4" />
 												<span className="sr-only">Edit</span>
 											</Button>

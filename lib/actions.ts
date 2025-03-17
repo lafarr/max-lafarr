@@ -169,3 +169,96 @@ export async function deleteEvent(id: number | undefined) {
 		throw new Error(errorMessage);
 	}
 }
+
+export async function getEventById(id: number) {
+	if (!id) {
+		throw new Error('id cannot be undefined');
+	}
+
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+		}
+
+		const { data, error: err } = await supabase
+			.from('events')
+			.select()
+			.eq("id", id);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message ?? "some error");
+		}
+
+		return data[0];
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function updateEventById(id: number, newData: { id?: number, time: string, created_at?: string }) {
+	if (!id) {
+		throw new Error('id cannot be undefined');
+	}
+
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+		}
+
+		console.log('new data!');
+		console.log(newData);
+
+		const { error: err } = await supabase
+			.from('events')
+			.update({ ...newData, id: undefined, created_at: undefined })
+			.eq("id", id);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message ?? "some error");
+		}
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function createSub(email: string) {
+	try {
+		const { data, error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+		}
+
+		const { error: err } = await supabase
+			.from('subscribers')
+			.insert([{ email }]);
+
+		if (err || !data) {
+			console.log(err);
+			throw new Error(err?.message ?? "some error");
+		}
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
