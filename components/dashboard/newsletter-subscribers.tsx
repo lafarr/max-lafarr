@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { LoaderCircle, MoreHorizontal, Search } from "lucide-react"
-import axios from 'axios';
+import { getSubData, deleteSub } from "@/lib/actions"
 
 // TODO: Add a spinner while the subs are loading
 export function NewsletterSubscribers() {
@@ -19,15 +19,11 @@ export function NewsletterSubscribers() {
 	function handleDelete(id: number): void {
 		setIsLoading(true);
 
-		axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_PATH}/admin/newsletter`, {
-			data: {
-				id: id
-			}
-		})
+		deleteSub(id)
 			.then(() => {
-				axios.get(`${process.env.NEXT_PUBLIC_API_BASE_PATH}/admin/newsletter`)
-					.then(({ data }) => {
-						const subs = data.subscribers;
+				getSubData()
+					.then((subs) => {
+						setSubs(subs);
 
 						setFilteredSubscribers(
 							subs.filter((sub: { id: number, email: string, createdAt: string }) =>
@@ -46,12 +42,12 @@ export function NewsletterSubscribers() {
 	useEffect(() => {
 		setIsLoading(true);
 		if (!haveFetched) {
-			axios.get(`${process.env.NEXT_PUBLIC_API_BASE_PATH}/admin/newsletter`)
-				.then(({ data }) => {
-					setSubs(data.subscribers);
+			getSubData()
+				.then((subscribers) => {
+					setSubs(subscribers);
 					setHaveFetched(true);
 					setFilteredSubscribers(
-						data.subscribers.filter((sub: { id: number, email: string, createdAt: string }) =>
+						subscribers.filter((sub: { id: number, email: string, createdAt: string }) =>
 							sub.email.toLowerCase().includes(searchTerm.toLowerCase()),
 						)
 					)

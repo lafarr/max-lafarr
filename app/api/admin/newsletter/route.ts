@@ -1,6 +1,80 @@
 import { createClient } from "@supabase/supabase-js";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import nodemailer from 'nodemailer';
+
+const supabaseUrl = process.env.SUBABASE_URL ?? '';
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey ?? '')
+
+export async function GET() {
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+			return new Response(JSON.stringify({ error: error?.message || "some error" }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
+		const { data, error: err } = await supabase
+			.from('subscribers')
+			.select()
+
+		if (err) {
+			console.log(err);
+			return new Response(JSON.stringify({ error: err?.message || "some error" }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+
+		const values: { id: number, email: string, createdAt: string }[] = data?.map(row => {
+			const createdAtDate: Date = new Date(row['created_at']);
+			const createdAt = new Date(createdAtDate.getFullYear(), createdAtDate.getMonth(), createdAtDate.getDate()).toISOString();
+			const normalDate = createdAt.split('T')[0];
+			const dateStuff = normalDate.split("-");
+			const year = dateStuff[0];
+			let month = dateStuff[1];
+			let day = dateStuff[2];
+
+			if (month.startsWith('0')) {
+				month = month.slice(1);
+			}
+
+			if (day.startsWith('0')) {
+				day = day.slice(1);
+			}
+
+			const dateString = `${month}-${day}-${year}`;
+
+			return { id: row['id'], email: row['email'], createdAt: dateString };
+		}) as { id: number, email: string, createdAt: string }[] ?? [];
+
+		return NextResponse.json({ subscribers: values }, {
+			status: 200,
+			headers: {
+				'Content-Type': 'application/json',
+				'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+				// Prevent caching variations based on browser
+				'Vary': 'Accept'
+			}
+		});
+
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		return new Response(JSON.stringify({ error: errorMessage }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
+}
 
 // TODO: Create app password for jlafarr99@gmail.com
 async function sendNewsletter(allRecipients: string[], subject: string, htmlContent: string): Promise<void> {
@@ -50,9 +124,6 @@ async function sendNewsletter(allRecipients: string[], subject: string, htmlCont
 }
 
 export async function POST(req: NextRequest) {
-	const supabaseUrl = process.env.SUBABASE_URL ?? '';
-	const supabaseKey = process.env.SUPABASE_KEY;
-	const supabase = createClient(supabaseUrl, supabaseKey ?? '')
 	const { htmlContent, subject } = await req.json();
 
 	try {
@@ -109,79 +180,9 @@ export async function POST(req: NextRequest) {
 	}
 }
 
-export async function GET() {
-	const supabaseUrl = process.env.SUBABASE_URL ?? '';
-	const supabaseKey = process.env.SUPABASE_KEY;
-	const supabase = createClient(supabaseUrl, supabaseKey ?? '')
 
-	try {
-		const { error } = await supabase.auth.signInWithPassword({
-			email: process.env.SUPABASE_EMAIL ?? '',
-			password: process.env.SUPABASE_PASSWORD ?? ''
-		});
-
-		if (error) {
-			console.error('Error signing in:', error.message)
-			return new Response(JSON.stringify({ error: error?.message || "some error" }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		}
-
-		const { data, error: err } = await supabase
-			.from('subscribers')
-			.select()
-
-		if (err) {
-			console.log(err);
-			return new Response(JSON.stringify({ error: err?.message || "some error" }), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		}
-
-		const values: { id: number, email: string, createdAt: string }[] = data?.map(row => {
-			const createdAtDate: Date = new Date(row['created_at']);
-			const createdAt = new Date(createdAtDate.getFullYear(), createdAtDate.getMonth(), createdAtDate.getDate()).toISOString();
-			const normalDate = createdAt.split('T')[0];
-			const dateStuff = normalDate.split("-");
-			const year = dateStuff[0];
-			let month = dateStuff[1];
-			let day = dateStuff[2];
-
-			if (month.startsWith('0')) {
-				month = month.slice(1);
-			}
-
-			if (day.startsWith('0')) {
-				day = day.slice(1);
-			}
-
-			const dateString = `${month}-${day}-${year}`;
-
-			return { id: row['id'], email: row['email'], createdAt: dateString };
-		}) as { id: number, email: string, createdAt: string }[] ?? [];
-
-		return new Response(JSON.stringify({ subscribers: values }), {
-			status: 200,
-			headers: { 'Content-Type': 'application/json' }
-		});
-
-	} catch (error: unknown) {
-		console.log(error);
-		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-		return new Response(JSON.stringify({ error: errorMessage }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
-	}
-
-}
 
 export async function DELETE(req: NextRequest) {
-	const supabaseUrl = process.env.SUBABASE_URL ?? '';
-	const supabaseKey = process.env.SUPABASE_KEY;
-	const supabase = createClient(supabaseUrl, supabaseKey ?? '')
 	const { id }: { id: number } = await req.json();
 
 	try {
