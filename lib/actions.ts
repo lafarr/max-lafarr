@@ -1,6 +1,20 @@
 'use server';
 
 import { createClient } from "@supabase/supabase-js";
+import { UTApi } from "uploadthing/server";
+
+enum StreamingPlatform {
+	spotify = 'SPOTIFY',
+	soundcloud = 'SOUNDCLOUD'
+}
+
+export interface Album {
+	title: string;
+	album_cover?: string;
+	release_date: string;
+	streaming_link: string;
+	streaming_platform: StreamingPlatform;
+}
 
 const supabaseUrl = process.env.SUBABASE_URL ?? '';
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -259,6 +273,52 @@ export async function createSub(email: string) {
 	} catch (error: unknown) {
 		console.log(error);
 		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function createAlbum(album: Album, file: File) {
+	const utapi = new UTApi({
+		token: process.env.UPLOADTHING_TOKEN
+	});
+	// TODO: do some validation here
+
+	const files = [file];
+	let fileUrl;
+	try {
+		const uploadedFiles = await utapi.uploadFiles(files);
+		fileUrl = uploadedFiles[0]?.data?.ufsUrl;
+
+		if (!fileUrl)
+			throw new Error("The file URL is null for some reason");
+	} catch (err: unknown) {
+		const errorMsg = err instanceof Error ? err.message : "An unknown error occurred while uploading the file";
+		throw new Error(errorMsg);
+	}
+
+	try {
+		const { data, error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+		}
+
+		const { error: err } = await supabase
+			.from('albums')
+			.insert([{ ...album, album_cover: fileUrl }]);
+
+		if (err || !data) {
+			console.log(err);
+			throw new Error(err?.message ?? "some error");
+		}
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+
+		// TODO: Delete the uploaded file
 		throw new Error(errorMessage);
 	}
 }

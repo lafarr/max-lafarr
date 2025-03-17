@@ -26,6 +26,7 @@
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "@types/nodemailer": "^6.4.17",
+    "@uploadthing/react": "^7.3.0",
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -42,6 +43,7 @@
     "supabase": "^2.19.7",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^7.5.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
