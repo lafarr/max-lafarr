@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Upload } from "lucide-react"
-import { Album, createAlbum, getAlbumById, StreamingPlatform, updateAlbumById } from "@/lib/actions"
+import { Album, createAlbum, getAlbumById, updateAlbumById } from "@/lib/actions"
 import Image from 'next/image';
 
 interface AlbumFormProps {
@@ -83,8 +83,9 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 		else {
 			if (file) {
 				try {
-					await createAlbum(formData as Album, file);
+					await createAlbum(formData, file);
 				} catch (err: unknown) {
+					console.log((err as Error).message || 'An unexpected error occurred.');
 					setIsLoading(false);
 				}
 			}
@@ -131,7 +132,7 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 								</div>}
 								{(file || formData.album_cover) && (
 									<div className="flex flex-col gap-4 w-48">
-										<Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={file ? URL.createObjectURL(file) : formData.album_cover} />
+										<Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={file ? URL.createObjectURL(file) : formData.album_cover ?? ''} />
 										<Button type="button" className="bg-blue-500" onClick={() => ref.current?.click()}>Replace</Button>
 									</div>
 								)}
