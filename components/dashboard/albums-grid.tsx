@@ -7,19 +7,22 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Loader2, Edit, Search, Trash } from "lucide-react"
 import { Album, deleteAlbumById, getAlbums } from "@/lib/actions"
+import { ConfirmationDialog } from "./confirmation_dialog"
 
 export function AlbumsGrid() {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [filteredAlbums, setFilteredAlbums] = useState<Album[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [itemsDeleted, setItemsDeleted] = useState(0);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [albumToDelete, setAlbumToDelete] = useState<number | undefined>(undefined);
 
-	function handleDelete(id: number | undefined) {
+	function handleDelete() {
+		const id = albumToDelete;
 		if (id) {
 			setIsLoading(true);
 			deleteAlbumById(id)
 				.then(() => {
-					setIsLoading(false);
 					setItemsDeleted((prev) => prev + 1);
 				})
 				// TODO: handle this error
@@ -83,7 +86,7 @@ export function AlbumsGrid() {
 								<Edit className="h-4 w-4 mr-2" />
 								Edit
 							</Button>
-							<Button variant="ghost" size="icon" onClick={() => handleDelete(album.id)}>
+							<Button variant="ghost" size="icon" onClick={() => { setAlbumToDelete(album.id); setShowDeleteModal(true); }}>
 								<Trash className="h-4 w-4" />
 								<span className="sr-only">Delete</span>
 							</Button>
@@ -91,6 +94,7 @@ export function AlbumsGrid() {
 					</Card>
 				))}
 			</div>
+			{showDeleteModal && <ConfirmationDialog confirmationButtonColor={'bg-red-500'} confirmationText={'Delete Album'} confirmationAction={() => { handleDelete(); setShowDeleteModal(false); }} />}
 		</div>
 	)
 }
