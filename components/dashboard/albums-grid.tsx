@@ -73,7 +73,7 @@ export function AlbumsGrid() {
 				{filteredAlbums.map((album) => (
 					<Card key={album.id} className="overflow-hidden">
 						<div className="relative aspect-square">
-							<Image src={album.album_cover || "/placeholder.svg"} alt={album.title} fill className="object-cover" />
+							<img src={album.album_cover || "/placeholder.svg"} alt={album.title} fill className="object-cover" />
 						</div>
 						<CardContent className="p-4">
 							<h3 className="font-semibold mb-1">{album.title}</h3>
