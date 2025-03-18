@@ -14,7 +14,7 @@ export interface Album {
 	album_cover?: string;
 	release_date: string;
 	streaming_link: string;
-	streaming_platform: StreamingPlatform;
+	streaming_platform: StreamingPlatform | string;
 }
 
 const supabaseUrl = process.env.SUBABASE_URL ?? '';
@@ -233,8 +233,6 @@ export async function updateEventById(id: number, newData: { id?: number, time: 
 			console.error('Error signing in:', error.message)
 		}
 
-		console.log('new data!');
-		console.log(newData);
 
 		const { error: err } = await supabase
 			.from('events')
@@ -287,10 +285,8 @@ export async function createAlbum(album: Album, file: File) {
 	const files = [file];
 	let fileUrl;
 	try {
-		console.log('starting upload...')
 		const uploadedFiles = await utapi.uploadFiles(files);
 		fileUrl = uploadedFiles[0]?.data?.ufsUrl;
-		console.log('done with upload...')
 
 		if (!fileUrl)
 			throw new Error("The file URL is null for some reason");
@@ -341,7 +337,6 @@ export async function getAlbums() {
 		const { data, error: err } = await supabase
 			.from('albums')
 			.select()
-		console.log(data);
 
 		if (err) {
 			console.log(err);
@@ -382,6 +377,95 @@ export async function deleteAlbumById(id: number) {
 		if (err) {
 			console.log(err);
 			throw new Error(err?.message || "some error");
+		}
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function getAlbumById(id: number) {
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+			throw new Error(error?.message || "some error");
+		}
+
+		const { data, error: err } = await supabase
+			.from('albums')
+			.select()
+			.eq("id", id);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message || "some error");
+		}
+
+		return data;
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function updateAlbumById(id: number, data: Album, file: File | null) {
+	if (!id) {
+		throw new Error('id cannot be undefined');
+	}
+
+	let fileUrl;
+	if (file) {
+		const utapi = new UTApi({
+			token: process.env.UPLOADTHING_TOKEN
+		});
+		// TODO: do some validation here
+
+		const files = [file];
+		try {
+			const uploadedFiles = await utapi.uploadFiles(files);
+			fileUrl = uploadedFiles[0]?.data?.ufsUrl;
+
+			if (!fileUrl)
+				throw new Error("The file URL is null for some reason");
+		} catch (err: unknown) {
+			const errorMsg = err instanceof Error ? err.message : "An unknown error occurred while uploading the file";
+			console.log(errorMsg);
+			throw new Error(errorMsg);
+		}
+	}
+
+	if (fileUrl) data.album_cover = fileUrl;
+
+	console.log('fileurl')
+	console.log(fileUrl);
+
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+			throw new Error('Error signing in:');
+		}
+
+		console.log('updating in the db...')
+		const { error: err } = await supabase
+			.from('albums')
+			.update({ id: undefined, ...data, created_at: undefined })
+			.eq("id", id);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message ?? "some error");
 		}
 	} catch (error: unknown) {
 		console.log(error);

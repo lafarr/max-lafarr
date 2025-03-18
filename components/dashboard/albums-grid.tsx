@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2, Edit, Search, Trash } from "lucide-react"
 import { Album, deleteAlbumById, getAlbums } from "@/lib/actions"
 import { ConfirmationDialog } from "./confirmation_dialog"
+import { useRouter } from "next/navigation"
 
 export function AlbumsGrid() {
 	const [searchTerm, setSearchTerm] = useState("")
@@ -16,6 +17,7 @@ export function AlbumsGrid() {
 	const [itemsDeleted, setItemsDeleted] = useState(0);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [albumToDelete, setAlbumToDelete] = useState<number | undefined>(undefined);
+	const router = useRouter();
 
 	function handleDelete() {
 		const id = albumToDelete;
@@ -82,7 +84,7 @@ export function AlbumsGrid() {
 							</div>
 						</CardContent>
 						<CardFooter className="p-4 pt-0 flex justify-between">
-							<Button variant="outline" size="sm" onClick={() => console.log(`Edit album ${album.id}`)}>
+							<Button variant="outline" size="sm" onClick={() => router.push(`/admin/albums/${album.id}/edit`)}>
 								<Edit className="h-4 w-4 mr-2" />
 								Edit
 							</Button>

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Upload } from "lucide-react"
-import { Album, createAlbum } from "@/lib/actions"
+import { Album, createAlbum, getAlbumById, StreamingPlatform, updateAlbumById } from "@/lib/actions"
 import Image from 'next/image';
 
 interface AlbumFormProps {
@@ -22,11 +22,12 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 	const ref = useRef<HTMLInputElement>(null);
 	const [isLoading, setIsLoading] = useState(false)
 	const [file, setFile] = useState<File | null>(null);
-	const [formData, setFormData] = useState({
-		title: "",
-		streaming_link: "",
-		release_date: "", // HTML month input format
-		streaming_platform: "spotify",
+	const [formData, setFormData] = useState<Album>({
+		title: '',
+		album_cover: '',
+		release_date: '',
+		streaming_link: '',
+		streaming_platform: ''
 	})
 
 	function getRemSize() {
@@ -50,17 +51,11 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 
 	useEffect(() => {
 		if (albumId) {
-			// In a real app, you would fetch the album data from your API
-			// This is just mock data for demonstration
-			const mockAlbum = {
-				id: albumId,
-				title: "Midnight Dreams",
-				release_date: "2023-03", // HTML month input format
-				streaming_link: "https://spotify.com/album/midnight-dreams",
-				streaming_platform: "spotify",
-			}
-
-			setFormData(mockAlbum)
+			getAlbumById(parseInt(albumId))
+				.then((data) => {
+					setFormData(data[0]);
+				})
+				.catch()
 		}
 	}, [albumId])
 
@@ -77,11 +72,21 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 		e.preventDefault()
 		setIsLoading(true)
 
-		if (file) {
+		if (albumId) {
 			try {
-				await createAlbum(formData as Album, file);
+				await updateAlbumById(parseInt(albumId), formData, file);
 			} catch (err: unknown) {
+				console.log(err);
 				setIsLoading(false);
+			}
+		}
+		else {
+			if (file) {
+				try {
+					await createAlbum(formData as Album, file);
+				} catch (err: unknown) {
+					setIsLoading(false);
+				}
 			}
 		}
 		setIsLoading(false);
@@ -121,10 +126,15 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 									ref={ref}
 									className="hidden"
 								/>
-								{!file && <div className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center" onClick={() => ref.current?.click()}>
+								{!file && !formData.album_cover && <div className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center" onClick={() => ref.current?.click()}>
 									<Upload className="text-white" />
 								</div>}
-								{file && <Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={URL.createObjectURL(file)} />}
+								{(file || formData.album_cover) && (
+									<div className="flex flex-col gap-4 w-48">
+										<Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={file ? URL.createObjectURL(file) : formData.album_cover} />
+										<Button type="button" className="bg-blue-500" onClick={() => ref.current?.click()}>Replace</Button>
+									</div>
+								)}
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="release_date">Release Date (M/YYYY)</Label>
