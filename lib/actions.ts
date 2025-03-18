@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { UTApi } from "uploadthing/server";
 
 enum StreamingPlatform {
-	spotify = 'SPOTIFY',
-	soundcloud = 'SOUNDCLOUD'
+	spotify = 'spotify',
+	soundcloud = 'soundcloud'
 }
 
 export interface Album {
@@ -287,8 +287,10 @@ export async function createAlbum(album: Album, file: File) {
 	const files = [file];
 	let fileUrl;
 	try {
+		console.log('starting upload...')
 		const uploadedFiles = await utapi.uploadFiles(files);
 		fileUrl = uploadedFiles[0]?.data?.ufsUrl;
+		console.log('done with upload...')
 
 		if (!fileUrl)
 			throw new Error("The file URL is null for some reason");
@@ -346,7 +348,13 @@ export async function getAlbums() {
 			throw new Error(err?.message || "some error");
 		}
 
-		return data;
+		return data?.sort((a, b) => {
+			const [aMonth, aYear] = a.release_date.split('/');
+			const [bMonth, bYear] = b.release_date.split('/');
+			const aDate = new Date(parseInt(aYear), parseInt(aMonth) - 1);
+			const bDate = new Date(parseInt(bYear), parseInt(bMonth) - 1);
+			return bDate.getTime() - aDate.getTime();
+		});
 	} catch (error: unknown) {
 		console.log(error);
 		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

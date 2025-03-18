@@ -78,7 +78,11 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 		setIsLoading(true)
 
 		if (file) {
-			await createAlbum(formData as Album, file);
+			try {
+				await createAlbum(formData as Album, file);
+			} catch (err: unknown) {
+				setIsLoading(false);
+			}
 		}
 		setIsLoading(false);
 		router.push('/admin/albums');
@@ -134,32 +138,32 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 									required
 								/>
 							</div>
+
 							<div className="space-y-2">
-								<Label htmlFor="streamingLink">Streaming Link</Label>
+								<Label>Streaming Platform</Label>
+								<RadioGroup value={formData.streaming_platform} onValueChange={handleRadioChange} className="flex space-x-4">
+									<div className="flex items-center space-x-2">
+										<RadioGroupItem value="spotify" id="spotify" />
+										<Label htmlFor="spotify">Spotify</Label>
+									</div>
+									<div className="flex items-center space-x-2">
+										<RadioGroupItem value="soundcloud" id="soundcloud" />
+										<Label htmlFor="soundcloud">SoundCloud</Label>
+									</div>
+								</RadioGroup>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="streamingLink">{formData.streaming_platform === 'soundcloud' ? 'Streaming Link' : 'Spotify ID'}</Label>
 								<Input
 									id="streamingLink"
 									name="streaming_link"
-									placeholder="https://example.com/album"
+									placeholder={`Example: ${formData.streaming_platform === 'soundcloud' ? 'https://soundcloud.com/max-lafarr/sets/unanimity' : "5QlSo5Hgas50pzaufIlIxa"}`}
 									value={formData.streaming_link}
 									onChange={handleChange}
 									required
 								/>
 							</div>
 						</div>
-					</div>
-
-					<div className="space-y-2">
-						<Label>Streaming Platform</Label>
-						<RadioGroup value={formData.streaming_platform} onValueChange={handleRadioChange} className="flex space-x-4">
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="spotify" id="spotify" />
-								<Label htmlFor="spotify">Spotify</Label>
-							</div>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="soundcloud" id="soundcloud" />
-								<Label htmlFor="soundcloud">SoundCloud</Label>
-							</div>
-						</RadioGroup>
 					</div>
 				</CardContent>
 				<CardFooter className="flex justify-between">

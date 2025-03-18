@@ -14,13 +14,6 @@ export function AlbumsGrid() {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [itemsDeleted, setItemsDeleted] = useState(0);
 
-	function formatDate(date: string) {
-		if (date.includes('-')) {
-			const [year, month] = date.split('-');
-			return `${month}/${year}`;
-		}
-	}
-
 	function handleDelete(id: number | undefined) {
 		if (id) {
 			setIsLoading(true);
@@ -79,10 +72,10 @@ export function AlbumsGrid() {
 						</div>
 						<CardContent className="p-4">
 							<h3 className="font-semibold mb-1">{album.title}</h3>
-							<p className="text-sm text-muted-foreground">Released: {formatDate(album.release_date)}</p>
+							<p className="text-sm text-muted-foreground">Released: {album.release_date}</p>
 							<div className="mt-2">
 								<p className="text-sm text-muted-foreground">Platform: {album.streaming_platform}</p>
-								<p className="text-xs text-muted-foreground truncate mt-1">{album.streaming_link}</p>
+								<p className="text-xs text-muted-foreground truncate mt-1">{`${album.streaming_platform === 'spotify' ? 'Spotify ID: ' : 'SoundCloud link: '} ${album.streaming_link}`}</p>
 							</div>
 						</CardContent>
 						<CardFooter className="p-4 pt-0 flex justify-between">
