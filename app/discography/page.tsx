@@ -68,7 +68,7 @@ export default function DiscographyPage() {
 									<div className="cursor-pointer group" onClick={() => setSelectedAlbum(album)}>
 										<div className="relative aspect-square overflow-hidden rounded-lg">
 											<Image
-												src={album.album_cover || "/placeholder.svg"}
+												src={album.album_cover ?? ''}
 												alt={album.title}
 												fill
 												className="object-cover hover:opacity-50 transition-all duration-300 md:scale-[0.835] rounded-lg"
