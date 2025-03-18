@@ -9,6 +9,7 @@ enum StreamingPlatform {
 }
 
 export interface Album {
+	id?: number;
 	title: string;
 	album_cover?: string;
 	release_date: string;
@@ -127,7 +128,7 @@ export async function getEvents() {
 	}
 }
 
-export async function createEvent(formData: any) {
+export async function createEvent(formData: { time: string }) {
 	try {
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email: process.env.SUPABASE_EMAIL ?? '',
@@ -319,6 +320,64 @@ export async function createAlbum(album: Album, file: File) {
 		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
 
 		// TODO: Delete the uploaded file
+		throw new Error(errorMessage);
+	}
+}
+
+export async function getAlbums() {
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+			throw new Error(error?.message || "some error");
+		}
+
+		const { data, error: err } = await supabase
+			.from('albums')
+			.select()
+		console.log(data);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message || "some error");
+		}
+
+		return data;
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+		throw new Error(errorMessage);
+	}
+}
+
+export async function deleteAlbumById(id: number) {
+	try {
+		const { error } = await supabase.auth.signInWithPassword({
+			email: process.env.SUPABASE_EMAIL ?? '',
+			password: process.env.SUPABASE_PASSWORD ?? ''
+		});
+
+		if (error) {
+			console.error('Error signing in:', error.message)
+			throw new Error(error?.message || "some error");
+		}
+
+		const { error: err } = await supabase
+			.from('albums')
+			.delete()
+			.eq("id", id);
+
+		if (err) {
+			console.log(err);
+			throw new Error(err?.message || "some error");
+		}
+	} catch (error: unknown) {
+		console.log(error);
+		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
 		throw new Error(errorMessage);
 	}
 }

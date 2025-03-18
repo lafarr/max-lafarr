@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Upload } from "lucide-react"
 import { Album, createAlbum } from "@/lib/actions"
+import Image from 'next/image';
 
 interface AlbumFormProps {
 	albumId?: string
@@ -18,15 +19,34 @@ interface AlbumFormProps {
 
 export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 	const router = useRouter()
-	const ref = useRef(null);
+	const ref = useRef<HTMLInputElement>(null);
 	const [isLoading, setIsLoading] = useState(false)
-	const [file, setFile] = useState<any>(null);
+	const [file, setFile] = useState<File | null>(null);
 	const [formData, setFormData] = useState({
 		title: "",
 		streaming_link: "",
 		release_date: "", // HTML month input format
 		streaming_platform: "spotify",
 	})
+
+	function getRemSize() {
+		const rootElement = document.documentElement;
+		const computedStyle = window.getComputedStyle(rootElement);
+
+		// Extract the font-size value
+		return parseFloat(computedStyle.fontSize);
+	}
+
+
+	function getButtonText(isLoading: boolean, albumId?: string): string {
+		if (isLoading) {
+			return "Saving..."
+		}
+		if (albumId) {
+			return "Update Album"
+		}
+		return "Create Album"
+	}
 
 	useEffect(() => {
 		if (albumId) {
@@ -61,15 +81,7 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 			await createAlbum(formData as Album, file);
 		}
 		setIsLoading(false);
-	}
-
-	// Function to format date from HTML month input (YYYY-MM) to M-YYYY for display
-	const formatDateForDisplay = (dateString: string) => {
-		if (!dateString) return ""
-		const [year, month] = dateString.split("-")
-		// Remove leading zero from month if present
-		const formattedMonth = month.replace(/^0/, "")
-		return `${formattedMonth}-01-${year}`
+		router.push('/admin/albums');
 	}
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,10 +117,10 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 									ref={ref}
 									className="hidden"
 								/>
-								{!file && ref && <div className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center" onClick={() => ref.current.click()}>
+								{!file && <div className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center" onClick={() => ref.current?.click()}>
 									<Upload className="text-white" />
 								</div>}
-								{file && <img className="w-48 h-48 object-cover" src={URL.createObjectURL(file)} />}
+								{file && <Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={URL.createObjectURL(file)} />}
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="release_date">Release Date (M/YYYY)</Label>
@@ -155,7 +167,7 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 						Cancel
 					</Button>
 					<Button type="submit" disabled={isLoading}>
-						{isLoading ? "Saving..." : albumId ? "Update Album" : "Create Album"}
+						{getButtonText(isLoading, albumId)}
 					</Button>
 				</CardFooter>
 			</Card>
