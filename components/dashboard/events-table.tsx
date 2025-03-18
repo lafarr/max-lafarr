@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Edit, Loader2, Search, Trash } from "lucide-react"
 import { deleteEvent, getEvents } from "@/lib/actions"
 import { useRouter } from "next/navigation"
+import { ConfirmationDialog } from "./confirmation_dialog"
 
 interface Event {
 	id?: number;
@@ -21,7 +22,25 @@ export function EventsTable() {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [events, setEvents] = useState<Event[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [confirmation, setConfirmation] = useState(false);
+	const [eventToDelete, setEventToDelete] = useState<number | undefined>(undefined);
 	const router = useRouter();
+
+	function handleDelete() {
+		const id = eventToDelete;
+		if (id) {
+			setIsLoading(true);
+			deleteEvent(id);
+
+			getEvents()
+				.then(tmpEvents => {
+					setEvents(tmpEvents)
+					setIsLoading(false);
+				})
+				// TODO: Handle this error
+				.catch();
+		}
+	}
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -92,7 +111,7 @@ export function EventsTable() {
 												<span className="sr-only">Edit</span>
 											</Button>
 											{/* TODO: Need to change this on click to route to the proper thing */}
-											<Button variant="ghost" size="icon" onClick={async () => { await deleteEvent(event.id); setEvents(await getEvents()); }}>
+											<Button variant="ghost" size="icon" onClick={() => { setConfirmation(true); setEventToDelete(event.id); }}>
 												<Trash className="h-4 w-4" />
 												<span className="sr-only">Delete</span>
 											</Button>
@@ -103,6 +122,7 @@ export function EventsTable() {
 						</TableBody>
 					</Table>
 				</div>
+				{confirmation && <ConfirmationDialog confirmationButtonColor={'bg-red-500'} confirmationText={'Delete Event'} confirmationAction={() => { handleDelete(); setConfirmation(false); }} />}
 			</div>
 		)
 }

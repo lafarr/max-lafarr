@@ -2,26 +2,26 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { createSub } from "@/lib/actions";
+// import { Input } from "@/components/ui/input"
+// import { useState } from "react"
+// import { createSub } from "@/lib/actions";
 
 export default function Home() {
-	const [email, setEmail] = useState("")
-	const [subscribed, setSubscribed] = useState(false)
+	// const [email, setEmail] = useState("")
+	// const [subscribed, setSubscribed] = useState(false)
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-		createSub(email);
-		setSubscribed(true)
-		setEmail("")
-	}
+	// const handleSubmit = (e: React.FormEvent) => {
+	// 	e.preventDefault()
+	// 	createSub(email);
+	// 	setSubscribed(true)
+	// 	setEmail("")
+	// }
 
 	return (
 		<main
 			className="min-h-screen bg-black text-white relative flex items-center justify-center"
 			style={{
-				backgroundImage: `url('https://scontent-ord5-2.xx.fbcdn.net/v/t39.30808-6/362622283_10161863852524893_7292756329538877753_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=f727a1&_nc_ohc=c-U5vPe8-yEQ7kNvgFFq0JS&_nc_oc=AdgQSaxzlhZjP94nXpJi5dp62kfcXew-CRtyDvnm4Q2l0LZk86kACYKEqsl1R69Zc_xrcL7h_02dhnBz1sUzwqdV&_nc_zt=23&_nc_ht=scontent-ord5-2.xx&_nc_gid=AV_QdHt-H-in39HGoSJe2KG&oh=00_AYEGUgbctoi3Ew9eJ-ZPCXWHUJ05RlkTHvD7rV8rlgjWXg&oe=67D88851')`,
+				backgroundImage: `url('https://7x0zshh65t.ufs.sh/f/ef0jRbxJDgdLgzL7khE4tsQJRIvCa1LTgcr0kupZWVyxfOoj')`,
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 				backgroundRepeat: "no-repeat",
@@ -55,7 +55,7 @@ export default function Home() {
 					</Button>
 				</div>
 
-				<div className="w-full max-w-md mx-auto mt-16 animate-fade-in delay-300">
+				{/*<div className="w-full max-w-md mx-auto mt-16 animate-fade-in delay-300">
 					{!subscribed ? (
 						<form onSubmit={handleSubmit} className="space-y-4">
 							<p className="text-lg text-gray-300 mb-6">
@@ -83,7 +83,7 @@ export default function Home() {
 							Thanks for subscribing! Check your email to confirm.
 						</div>
 					)}
-				</div>
+				</div>*/}
 			</div>
 		</main>
 	)
