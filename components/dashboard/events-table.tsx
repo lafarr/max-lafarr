@@ -8,6 +8,8 @@ import { Edit, Loader2, Search, Trash } from "lucide-react"
 import { deleteEvent, getEvents } from "@/lib/actions"
 import { useRouter } from "next/navigation"
 import { ConfirmationDialog } from "./confirmation_dialog"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 interface Event {
 	id?: number;
@@ -24,12 +26,14 @@ export function EventsTable() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [confirmation, setConfirmation] = useState(false);
 	const [eventToDelete, setEventToDelete] = useState<number | undefined>(undefined);
+	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
 
 	function handleDelete() {
 		const id = eventToDelete;
 		if (id) {
 			setIsLoading(true);
+			setError(null);
 			deleteEvent(id);
 
 			getEvents()
@@ -37,20 +41,27 @@ export function EventsTable() {
 					setEvents(tmpEvents)
 					setIsLoading(false);
 				})
-				// TODO: Handle this error
-				.catch();
+				.catch(err => {
+					console.error("Failed to delete event:", err);
+					setError("Failed to delete the event. Please try again later.");
+					setIsLoading(false);
+				});
 		}
 	}
 
 	useEffect(() => {
 		setIsLoading(true);
+		setError(null);
 		getEvents()
 			.then(tmpEvents => {
 				setEvents(tmpEvents)
 				setIsLoading(false);
 			})
-			// TODO: Handle this error
-			.catch();
+			.catch(err => {
+				console.error("Failed to fetch events:", err);
+				setError("Failed to load events. Please try again later.");
+				setIsLoading(false);
+			});
 	}, []);
 
 	const filteredEvents = events.filter(
@@ -69,6 +80,13 @@ export function EventsTable() {
 	else
 		return (
 			<div className="space-y-4">
+				{error && (
+					<Alert variant="destructive">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>Error</AlertTitle>
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 				<div className="flex items-center">
 					<div className="relative flex-1">
 						<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -105,12 +123,10 @@ export function EventsTable() {
 									</TableCell>
 									<TableCell>
 										<div className="flex items-center gap-2">
-											{/* TODO: Need to change this on click to route to the proper thing */}
 											<Button variant="ghost" size="icon" onClick={() => router.push(`/admin/events/${event.id}/edit`)}>
 												<Edit className="h-4 w-4" />
 												<span className="sr-only">Edit</span>
 											</Button>
-											{/* TODO: Need to change this on click to route to the proper thing */}
 											<Button variant="ghost" size="icon" onClick={() => { setConfirmation(true); setEventToDelete(event.id); }}>
 												<Trash className="h-4 w-4" />
 												<span className="sr-only">Delete</span>

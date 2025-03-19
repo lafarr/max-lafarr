@@ -22,6 +22,7 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 	const ref = useRef<HTMLInputElement>(null);
 	const [isLoading, setIsLoading] = useState(false)
 	const [file, setFile] = useState<File | null>(null);
+	const [error, setError] = useState(false)
 	const [formData, setFormData] = useState<Album>({
 		title: '',
 		album_cover: '',
@@ -54,8 +55,12 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 			getAlbumById(parseInt(albumId))
 				.then((data) => {
 					setFormData(data[0]);
+					setError(false);
 				})
-				.catch()
+				.catch((err) => {
+					console.error("Error fetching album:", err);
+					setError(true);
+				})
 		}
 	}, [albumId])
 
@@ -104,6 +109,17 @@ export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
 		<form onSubmit={handleSubmit}>
 			<Card>
 				<CardContent className="space-y-4 pt-6">
+					{error && (
+						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
+							<svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+								<path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-1-1v-4a1 1 0 112 0v4a1 1 0 01-1 1z" clipRule="evenodd"></path>
+							</svg>
+							<div>
+								<p className="font-medium">Error retrieving album information</p>
+								<p className="text-sm">We encountered a problem loading this album. Please try again later.</p>
+							</div>
+						</div>
+					)}
 					<div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
 						<div className="flex-1 space-y-4">
 							<div className="space-y-2">

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createEvent, getEventById, updateEventById } from "@/lib/actions"
 import { Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface EventFormProps {
 	eventId?: string
@@ -18,6 +19,7 @@ interface EventFormProps {
 export function EventForm({ eventId }: Readonly<EventFormProps>) {
 	const router = useRouter()
 	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const [formData, setFormData] = useState({
 		name: "",
 		location: "",
@@ -33,8 +35,11 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 					setFormData(event);
 					setIsLoading(false);
 				})
-				// TODO: Handle this error
-				.catch()
+				.catch((error) => {
+					console.error("Error fetching event:", error);
+					setError("Failed to load event information. Please try again later.");
+					setIsLoading(false);
+				})
 		}
 	}, [eventId])
 
@@ -47,6 +52,7 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault()
 		setIsLoading(true)
+		setError(null) // Clear any previous errors
 
 		if (eventId) {
 			setIsLoading(true);
@@ -55,15 +61,22 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 					setIsLoading(false);
 					router.push('/admin/events');
 				})
-				.catch()
+				.catch((error) => {
+					console.error("Error updating event:", error);
+					setError("Failed to update the event. Please try again later.");
+					setIsLoading(false);
+				})
 		} else {
 			createEvent(formData)
 				.then(() => {
 					setIsLoading(false);
 					router.push('/admin/events');
 				})
-				// TODO: Handle this error
-				.catch()
+				.catch((error) => {
+					console.error("Error creating event:", error);
+					setError("Failed to create the event. Please try again later.");
+					setIsLoading(false);
+				})
 		}
 	}
 
@@ -86,6 +99,11 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 				{!isLoading &&
 					<>
 						<CardContent className="space-y-4 pt-6">
+							{error && (
+								<Alert variant="destructive" className="mb-4">
+									<AlertDescription>{error}</AlertDescription>
+								</Alert>
+							)}
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 								<div className="space-y-2">
 									<Label htmlFor="name">Event Name</Label>

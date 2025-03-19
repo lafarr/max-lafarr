@@ -5,10 +5,11 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader2, Edit, Search, Trash } from "lucide-react"
+import { Loader2, Edit, Search, Trash, AlertCircle } from "lucide-react"
 import { Album, deleteAlbumById, getAlbums } from "@/lib/actions"
 import { ConfirmationDialog } from "./confirmation_dialog"
 import { useRouter } from "next/navigation"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function AlbumsGrid() {
 	const [searchTerm, setSearchTerm] = useState("")
@@ -17,22 +18,29 @@ export function AlbumsGrid() {
 	const [itemsDeleted, setItemsDeleted] = useState(0);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [albumToDelete, setAlbumToDelete] = useState<number | undefined>(undefined);
+	const [deleteError, setDeleteError] = useState<boolean>(false);
+	const [fetchError, setFetchError] = useState<boolean>(false);
 	const router = useRouter();
 
 	function handleDelete() {
 		const id = albumToDelete;
 		if (id) {
 			setIsLoading(true);
+			setDeleteError(false);
 			deleteAlbumById(id)
 				.then(() => {
 					setItemsDeleted((prev) => prev + 1);
 				})
-				// TODO: handle this error
-				.catch()
+				.catch((error) => {
+					console.error("Error deleting album:", error);
+					setDeleteError(true);
+					setIsLoading(false);
+				})
 		}
 	}
 
 	useEffect(() => {
+		setFetchError(false);
 		getAlbums()
 			.then((data) => {
 				setFilteredAlbums(data.filter(
@@ -43,8 +51,11 @@ export function AlbumsGrid() {
 				))
 				setIsLoading(false);
 			})
-			// TODO: Handle this error
-			.catch()
+			.catch((error) => {
+				console.error("Error fetching albums:", error);
+				setFetchError(true);
+				setIsLoading(false);
+			})
 	}, [searchTerm, itemsDeleted]);
 
 	if (isLoading)
@@ -53,9 +64,52 @@ export function AlbumsGrid() {
 				<Loader2 className="mt-24 animate-spin text-white" />
 			</div>
 		)
-
+	else if (fetchError)
+		return (
+			<Alert variant="destructive" className="mt-4">
+				<AlertCircle className="h-4 w-4" />
+				<AlertDescription>
+					We encountered an error while retrieving albums. Please try again later.
+					<div className="mt-2">
+						<Button 
+							variant="outline" 
+							onClick={() => {
+								setFetchError(false);
+								setIsLoading(true);
+								getAlbums()
+									.then((data) => {
+										setFilteredAlbums(data.filter(
+											(album) =>
+												album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+												album.release_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
+												album.streaming_platform.toLowerCase().includes(searchTerm.toLowerCase()),
+										))
+										setIsLoading(false);
+									})
+									.catch((error) => {
+										console.error("Error fetching albums:", error);
+										setFetchError(true);
+										setIsLoading(false);
+									})
+							}}
+						>
+							Try Again
+						</Button>
+					</div>
+				</AlertDescription>
+			</Alert>
+		)
 	else return (
 		<div className="space-y-4">
+			{deleteError && (
+				<Alert variant="destructive" className="mb-4">
+					<AlertCircle className="h-4 w-4" />
+					<AlertDescription>
+						We encountered an error while deleting the album. Please try again later.
+					</AlertDescription>
+				</Alert>
+			)}
+			
 			<div className="flex items-center">
 				<div className="relative flex-1">
 					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

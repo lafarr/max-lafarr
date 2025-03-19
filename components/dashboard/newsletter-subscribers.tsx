@@ -5,19 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { LoaderCircle, MoreHorizontal, Search } from "lucide-react"
+import { LoaderCircle, MoreHorizontal, Search, AlertCircle } from "lucide-react"
 import { getSubData, deleteSub } from "@/lib/actions"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-// TODO: Add a spinner while the subs are loading
 export function NewsletterSubscribers() {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [filteredSubscribers, setFilteredSubscribers] = useState<{ id: number, email: string, createdAt: string }[]>([]);
 	const [subs, setSubs] = useState<{ id: number, email: string, createdAt: string }[]>([])
 	const [haveFetched, setHaveFetched] = useState(false);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 
 	function handleDelete(id: number): void {
 		setIsLoading(true);
+		setError(null);
 
 		deleteSub(id)
 			.then(() => {
@@ -32,15 +34,22 @@ export function NewsletterSubscribers() {
 						)
 						setIsLoading(false);
 					})
-					// TODO: Handle this error
-					.catch()
+					.catch(err => {
+						console.error("Failed to fetch subscribers after deletion:", err);
+						setError("Failed to refresh subscriber list. Please try again later.");
+						setIsLoading(false);
+					})
 			})
-			// TODO: Handle this error
-			.catch();
+			.catch(err => {
+				console.error("Failed to delete subscriber:", err);
+				setError("Failed to delete the subscriber. Please try again later.");
+				setIsLoading(false);
+			});
 	}
 
 	useEffect(() => {
 		setIsLoading(true);
+		setError(null);
 		if (!haveFetched) {
 			getSubData()
 				.then((subscribers) => {
@@ -53,8 +62,11 @@ export function NewsletterSubscribers() {
 					)
 					setIsLoading(false);
 				})
-				// TODO: Handle this error
-				.catch()
+				.catch(err => {
+					console.error("Failed to fetch subscribers:", err);
+					setError("Failed to load subscribers. Please try again later.");
+					setIsLoading(false);
+				})
 		} else {
 			setFilteredSubscribers(
 				subs.filter((sub: { id: number, email: string, createdAt: string }) =>
@@ -74,6 +86,13 @@ export function NewsletterSubscribers() {
 	} else {
 		return (
 			<div className="space-y-4">
+				{error && (
+					<Alert variant="destructive">
+						<AlertCircle className="h-4 w-4" />
+						<AlertTitle>Error</AlertTitle>
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 				<div className="flex items-center gap-2">
 					<div className="relative flex-1">
 						<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

@@ -10,6 +10,7 @@ export default function DiscographyPage() {
 	const [selectedAlbum, setSelectedAlbum] = useState<(typeof albums)[0] | null>(null)
 	const [albums, setAlbums] = useState<Album[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [albumsError, setAlbumsError] = useState(false);
 
 	const renderEmbed = (album: (typeof albums)[0]) => {
 		if (album.streaming_platform === "soundcloud") {
@@ -44,7 +45,7 @@ export default function DiscographyPage() {
 				setIsLoading(false);
 			})
 			// TODO: Handle this error
-			.catch()
+			.catch(() => setAlbumsError(true));
 	}, []);
 
 	if (isLoading)
@@ -62,7 +63,12 @@ export default function DiscographyPage() {
 					<p className="text-center text-gray-300 mb-12">Click any album to listen</p>
 
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-0">
-						{albums.map((album) => (
+						{albumsError && (
+							<div className="col-span-full text-center">
+								<p className="text-red-500 text-lg">We encountered an error while loading the albums. Please try again later.</p>
+							</div>
+						)}
+						{!albumsError && albums.map((album) => (
 							<Dialog key={album.id}>
 								<DialogTrigger asChild>
 									<div className="cursor-pointer group" onClick={() => setSelectedAlbum(album)}>
@@ -70,8 +76,9 @@ export default function DiscographyPage() {
 											<Image
 												src={album.album_cover ?? ''}
 												alt={album.title}
-												fill
 												className="object-cover hover:opacity-50 transition-all duration-300 md:scale-[0.835] rounded-lg"
+												width={500}
+												height={500}
 											/>
 										</div>
 									</div>

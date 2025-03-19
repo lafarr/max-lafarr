@@ -19,6 +19,7 @@ interface Event {
 export default function EventsPage() {
 	const [events, setEvents] = useState<Event[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [eventsError, setEventsError] = useState(false);
 
 	useEffect(() => {
 		getEvents()
@@ -26,7 +27,7 @@ export default function EventsPage() {
 				setEvents(localEvents);
 				setIsLoading(false);
 			})
-			.catch();
+			.catch(() => setEventsError(true));
 	}, []);
 
 	function formatDate(date: string) {
@@ -43,8 +44,13 @@ export default function EventsPage() {
 			<div className="container mx-auto px-4">
 				<h1 className="text-4xl md:text-5xl font-bold mb-12 text-center">UPCOMING EVENTS</h1>
 
+				{eventsError && (
+					<div className="text-center py-12">
+						<p className="text-2xl font-light text-red-400">Sorry, we had trouble loading the events. Please try again later.</p>
+					</div>
+				)}
 				{isLoading && <div className="flex justify-center items-center"><Loader2 className="mt-24 animate-spin text-white" /> </div>}
-				{!isLoading && <div className="grid gap-6 max-w-3xl mx-auto">
+				{!isLoading && !eventsError && <div className="grid gap-6 max-w-3xl mx-auto">
 					{events.length > 0 ? (
 						events.map((event) => (
 							<Card key={event.id} className="bg-zinc-900 border-zinc-800 text-white">
@@ -70,7 +76,7 @@ export default function EventsPage() {
 
 										<div className="flex justify-start">
 											{event.ticket_link && <Button asChild className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8">
-												<a href={event.ticketLink}>GET TICKETS</a>
+												<a href={event.ticket_link}>GET TICKETS</a>
 											</Button>}
 										</div>
 									</div>

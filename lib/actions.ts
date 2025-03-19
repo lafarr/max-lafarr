@@ -12,6 +12,7 @@ export interface Album {
 	id?: number;
 	title: string;
 	album_cover?: string;
+	album_cover_key?: string;
 	release_date: string;
 	streaming_link: string;
 	streaming_platform: StreamingPlatform | string;
@@ -280,13 +281,13 @@ export async function createAlbum(album: Album, file: File) {
 	const utapi = new UTApi({
 		token: process.env.UPLOADTHING_TOKEN
 	});
-	// TODO: do some validation here
 
 	const files = [file];
-	let fileUrl;
+	let fileUrl, fileKey;
 	try {
 		const uploadedFiles = await utapi.uploadFiles(files);
 		fileUrl = uploadedFiles[0]?.data?.ufsUrl;
+		fileKey = uploadedFiles[0]?.data?.key;
 
 		if (!fileUrl)
 			throw new Error("The file URL is null for some reason");
@@ -307,7 +308,7 @@ export async function createAlbum(album: Album, file: File) {
 
 		const { error: err } = await supabase
 			.from('albums')
-			.insert([{ ...album, album_cover: fileUrl }]);
+			.insert([{ ...album, album_cover: fileUrl, album_cover_key: fileKey }]);
 
 		if (err || !data) {
 			console.log(err);
@@ -317,7 +318,15 @@ export async function createAlbum(album: Album, file: File) {
 		console.log(error);
 		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
 
-		// TODO: Delete the uploaded file
+		if (fileKey) {
+			try {
+				await utapi.deleteFiles([fileKey]);
+			} catch (err: unknown) {
+				console.log(err);
+				const errorMsg = err instanceof Error ? err.message : "An unknown error occurred while deleting the file";
+				throw new Error(errorMsg);
+			}
+		}
 		throw new Error(errorMessage);
 	}
 }
@@ -358,6 +367,10 @@ export async function getAlbums() {
 }
 
 export async function deleteAlbumById(id: number) {
+	const utapi = new UTApi({
+		token: process.env.UPLOADTHING_TOKEN
+	});
+
 	try {
 		const { error } = await supabase.auth.signInWithPassword({
 			email: process.env.SUPABASE_EMAIL ?? '',
@@ -369,15 +382,27 @@ export async function deleteAlbumById(id: number) {
 			throw new Error(error?.message || "some error");
 		}
 
-		const { error: err } = await supabase
+		const { data, error: err } = await supabase
 			.from('albums')
 			.delete()
-			.eq("id", id);
+			.eq("id", id)
+			.select();
+
+		if (data?.[0]?.album_cover_key) {
+			try {
+				await utapi.deleteFiles([data[0].album_cover_key]);
+			} catch (err: unknown) {
+				console.log(err);
+				const errorMsg = err instanceof Error ? err.message : "An unknown error occurred while deleting the file";
+				throw new Error(errorMsg);
+			}
 
 		if (err) {
 			console.log(err);
-			throw new Error(err?.message || "some error");
+			const errorMsg = (err as Error).message ? (err as Error).message : "An unknown error occurred while deleting the file";
+			throw new Error(errorMsg);
 		}
+	}
 	} catch (error: unknown) {
 		console.log(error);
 		const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -425,7 +450,6 @@ export async function updateAlbumById(id: number, data: Album, file: File | null
 		const utapi = new UTApi({
 			token: process.env.UPLOADTHING_TOKEN
 		});
-		// TODO: do some validation here
 
 		const files = [file];
 		try {
