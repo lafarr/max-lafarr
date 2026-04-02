@@ -7,16 +7,18 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white relative flex items-center justify-center overflow-hidden">
       {/* Parallax background */}
-      <ParallaxHero className="absolute inset-0 z-0">
-        <div
-          className="w-full h-[130%] grayscale"
-          style={{
-            backgroundImage: `url('https://7x0zshh65t.ufs.sh/f/ef0jRbxJDgdLgzL7khE4tsQJRIvCa1LTgcr0kupZWVyxfOoj')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-      </ParallaxHero>
+      <div className="absolute inset-0 z-0">
+        <ParallaxHero className="w-full h-full">
+          <div
+            className="w-full h-[130%] grayscale"
+            style={{
+              backgroundImage: `url('https://7x0zshh65t.ufs.sh/f/ef0jRbxJDgdLgzL7khE4tsQJRIvCa1LTgcr0kupZWVyxfOoj')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+        </ParallaxHero>
+      </div>
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-black/80 z-10" />
