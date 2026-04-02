@@ -17,10 +17,9 @@ function renderEmbed(album: Album) {
       <iframe
         width="100%"
         height="500"
-        scrolling="no"
-        frameBorder="no"
         src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(album.streaming_link)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
-        className="rounded-md"
+        className="rounded-md border-0 overflow-hidden"
+        title={`${album.title} on SoundCloud`}
       />
     );
   }
@@ -29,9 +28,9 @@ function renderEmbed(album: Album) {
       src={`https://open.spotify.com/embed/album/${album.streaming_link}`}
       width="100%"
       height="500"
-      frameBorder="0"
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      className="rounded-md"
+      className="rounded-md border-0"
+      title={`${album.title} on Spotify`}
     />
   );
 }

@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { Instagram, Youtube } from 'lucide-react';
-import { FaSpotify } from 'react-icons/fa';
+import { FaSpotify, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FadeUp } from '@/components/animations';
 
 export default function Footer() {
@@ -49,12 +48,12 @@ export default function Footer() {
                   {
                     href: 'https://www.instagram.com/maxlafarrmusic/',
                     label: 'Instagram',
-                    icon: <Instagram className="h-5 w-5" />,
+                    icon: <FaInstagram className="h-5 w-5" />,
                   },
                   {
                     href: 'https://www.youtube.com/@maxlafarrmusic3168',
                     label: 'YouTube',
-                    icon: <Youtube className="h-6 w-6" />,
+                    icon: <FaYoutube className="h-6 w-6" />,
                   },
                 ].map((s) => (
                   <Link

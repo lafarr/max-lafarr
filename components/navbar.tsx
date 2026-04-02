@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Menu, Instagram, Youtube } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { FaSpotify, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { FaSpotify } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const navLinks = [
@@ -25,12 +25,12 @@ const socialLinks = [
   {
     href: 'https://www.instagram.com/maxlafarrmusic/',
     label: 'Instagram',
-    icon: <Instagram className="h-5 w-5" />,
+    icon: <FaInstagram className="h-5 w-5" />,
   },
   {
     href: 'https://www.youtube.com/@maxlafarrmusic3168',
     label: 'YouTube',
-    icon: <Youtube className="h-6 w-6" />,
+    icon: <FaYoutube className="h-6 w-6" />,
   },
 ];
 
