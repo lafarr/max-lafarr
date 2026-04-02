@@ -9,6 +9,10 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+// Constant-time dummy hash — used when no user is found to prevent
+// timing attacks that could reveal valid email addresses.
+const DUMMY_HASH = '$2b$10$invalidhashusedtomaintaintimingXXXXXXXXXXXXXXXXXXXXXX';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
@@ -18,16 +22,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { email, password } = parsed.data;
 
-        const { data: user, error } = await supabase
-          .from('users')
-          .select('id, email, password_hash')
-          .eq('email', email)
-          .single();
+        let user: { id: string; email: string; password_hash: string } | null = null;
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('id, email, password_hash')
+            .eq('email', email)
+            .single();
+          if (!error) user = data;
+        } catch {
+          return null;
+        }
 
-        if (error || !user) return null;
-
-        const isValid = await bcrypt.compare(password, user.password_hash);
-        if (!isValid) return null;
+        // Always run bcrypt to prevent timing-based user enumeration.
+        const hashToCompare = user ? user.password_hash : DUMMY_HASH;
+        const isValid = await bcrypt.compare(password, hashToCompare);
+        if (!isValid || !user) return null;
 
         return { id: user.id, email: user.email };
       },
@@ -45,7 +55,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token.id) session.user.id = token.id as string;
+      if (typeof token.id === 'string') {
+        session.user.id = token.id;
+      }
       return session;
     },
   },
