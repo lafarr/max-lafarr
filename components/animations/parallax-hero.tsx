@@ -12,7 +12,7 @@ export function ParallaxHero({ children, className }: ParallaxHeroProps) {
   const ref = useRef<HTMLDivElement>(null);
   const shouldReduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', shouldReduce ? '0%' : '35%']);
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', shouldReduce ? '0%' : '40%']);
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${className ?? ''}`}>
