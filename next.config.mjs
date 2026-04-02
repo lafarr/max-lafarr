@@ -7,12 +7,6 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     domains: ['scontent-ord5-2.xx.fbcdn.net'],
     unoptimized: true,
