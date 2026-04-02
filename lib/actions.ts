@@ -97,17 +97,18 @@ export async function updateAlbumById(
 ) {
   if (!id) throw new Error('id cannot be undefined');
 
+  let album_cover = data.album_cover;
   if (file) {
     const utapi = new UTApi({ token: process.env.UPLOADTHING_TOKEN });
     const uploadedFiles = await utapi.uploadFiles([file]);
     const fileUrl = uploadedFiles[0]?.data?.ufsUrl;
     if (!fileUrl) throw new Error('File URL is null after upload');
-    data.album_cover = fileUrl;
+    album_cover = fileUrl;
   }
 
   const { error } = await supabase
     .from('albums')
-    .update({ ...data, id: undefined })
+    .update({ ...data, album_cover, id: undefined })
     .eq('id', id);
   if (error) throw new Error(error.message);
   revalidateTag('albums');

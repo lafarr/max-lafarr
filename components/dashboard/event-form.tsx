@@ -32,6 +32,7 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 		if (eventId) {
 			getEventById(parseInt(eventId))
 				.then((event) => {
+					if (!event) return;
 					setFormData({
 						name: event.name,
 						location: event.location,

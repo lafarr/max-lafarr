@@ -62,7 +62,7 @@ export const getEvents = unstable_cache(
 );
 
 export const getEventById = unstable_cache(
-  async (id: number): Promise<Event> => {
+  async (id: number): Promise<Event | undefined> => {
     const { data, error } = await supabase.from('events').select().eq('id', id);
     if (error) throw new Error(error.message);
     return data?.[0];
