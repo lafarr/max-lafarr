@@ -1,179 +1,164 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createEvent, getEventById, updateEventById } from "@/lib/actions"
-import { Loader2 } from "lucide-react"
+import { createEvent, updateEventById } from "@/lib/actions"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import type { Event } from "@/lib/queries"
+
+const eventSchema = z.object({
+  name: z.string().min(1, "Event name is required"),
+  location: z.string().min(1, "Location is required"),
+  date: z.string().min(1, "Date is required"),
+  time: z.string().min(1, "Time is required"),
+  ticket_link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+});
+
+type EventFormValues = z.infer<typeof eventSchema>;
 
 interface EventFormProps {
-	eventId?: string
+  eventId?: string;
+  initialEvent?: Event;
 }
 
-export function EventForm({ eventId }: Readonly<EventFormProps>) {
-	const router = useRouter()
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [formData, setFormData] = useState({
-		name: "",
-		location: "",
-		date: "",
-		time: "",
-		ticket_link: "",
-	})
+export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
+  const router = useRouter();
 
-	useEffect(() => {
-		if (eventId) {
-			getEventById(parseInt(eventId))
-				.then((event) => {
-					if (!event) return;
-					setFormData({
-						name: event.name,
-						location: event.location,
-						date: event.date,
-						time: event.time,
-						ticket_link: event.ticket_link ?? "",
-					});
-					setIsLoading(false);
-				})
-				.catch((error) => {
-					console.error("Error fetching event:", error);
-					setError("Failed to load event information. Please try again later.");
-					setIsLoading(false);
-				})
-		}
-	}, [eventId])
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    watch,
+  } = useForm<EventFormValues>({
+    resolver: zodResolver(eventSchema),
+    defaultValues: {
+      name: initialEvent?.name ?? "",
+      location: initialEvent?.location ?? "",
+      date: initialEvent?.date ?? "",
+      time: initialEvent?.time ?? "",
+      ticket_link: initialEvent?.ticket_link ?? "",
+    },
+  });
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = e.target
-		console.log(name, value);
-		setFormData((prev) => ({ ...prev, [name]: value }))
-	}
+  const dateValue = watch("date");
 
-	function handleSubmit(e: React.FormEvent) {
-		e.preventDefault()
-		setIsLoading(true)
-		setError(null) // Clear any previous errors
+  async function onSubmit(data: EventFormValues) {
+    const payload = {
+      name: data.name,
+      location: data.location,
+      date: data.date,
+      time: data.time,
+      ticket_link: data.ticket_link ?? "",
+    };
 
-		if (eventId) {
-			setIsLoading(true);
-			updateEventById(parseInt(eventId), formData)
-				.then(() => {
-					setIsLoading(false);
-					router.push('/admin/events');
-				})
-				.catch((error) => {
-					console.error("Error updating event:", error);
-					setError("Failed to update the event. Please try again later.");
-					setIsLoading(false);
-				})
-		} else {
-			createEvent(formData)
-				.then(() => {
-					setIsLoading(false);
-					router.push('/admin/events');
-				})
-				.catch((error) => {
-					console.error("Error creating event:", error);
-					setError("Failed to create the event. Please try again later.");
-					setIsLoading(false);
-				})
-		}
-	}
+    try {
+      if (eventId) {
+        await updateEventById(parseInt(eventId), payload);
+      } else {
+        await createEvent(payload);
+      }
+      router.push("/admin/events");
+    } catch (err) {
+      console.error("Error saving event:", err);
+      setError("root", {
+        message: eventId
+          ? "Failed to update the event. Please try again later."
+          : "Failed to create the event. Please try again later.",
+      });
+    }
+  }
 
-	// Function to format date from HTML date input (YYYY-MM-DD) to M-DD-YYYY for display
-	const formatDateForDisplay = (dateString: string) => {
-		if (!dateString) return ""
-		const [year, month, day] = dateString.split("-")
-		// Remove leading zero from month if present
-		const formattedMonth = month.replace(/^0/, "")
-		return `${formattedMonth}-${day}-${year}`
-	}
+  function formatDateForDisplay(dateString: string) {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${month.replace(/^0/, "")}-${day}-${year}`;
+  }
 
-	return (
-		<form onSubmit={handleSubmit}>
-			<Card className={`${isLoading ? 'p-24' : ''}`}>
-				{isLoading &&
-					<div className="flex justify-center items-center">
-						<Loader2 className="animate-spin text-white" />
-					</div>}
-				{!isLoading &&
-					<>
-						<CardContent className="space-y-4 pt-6">
-							{error && (
-								<Alert variant="destructive" className="mb-4">
-									<AlertDescription>{error}</AlertDescription>
-								</Alert>
-							)}
-							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="name">Event Name</Label>
-									<Input
-										id="name"
-										name="name"
-										placeholder="Enter event name"
-										value={formData.name}
-										onChange={handleChange}
-										required
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="location">Location</Label>
-									<Input
-										id="location"
-										name="location"
-										placeholder="Enter event location"
-										value={formData.location}
-										onChange={handleChange}
-										required
-									/>
-								</div>
-							</div>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          {errors.root && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errors.root.message}</AlertDescription>
+            </Alert>
+          )}
 
-							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="date">Date (MM-DD-YYYY)</Label>
-									<Input id="date" name="date" type="date" value={formData.date} onChange={handleChange} required />
-									{formData.date && (
-										<p className="text-xs text-muted-foreground">
-											Will be displayed as: {formatDateForDisplay(formData.date)}
-										</p>
-									)}
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="time">Time</Label>
-									<Input id="time" name="time" type="time" value={formData.time} onChange={handleChange} required />
-								</div>
-							</div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="name">Event Name</Label>
+              <Input
+                id="name"
+                placeholder="Enter event name"
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive">{errors.name.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                placeholder="Enter event location"
+                {...register("location")}
+              />
+              {errors.location && (
+                <p className="text-xs text-destructive">{errors.location.message}</p>
+              )}
+            </div>
+          </div>
 
-							<div className="space-y-2">
-								<Label htmlFor="ticketLink">Ticket Link (Optional)</Label>
-								<Input
-									id="ticketLink"
-									name="ticket_link"
-									placeholder="https://example.com/tickets"
-									value={formData.ticket_link}
-									onChange={handleChange}
-								/>
-							</div>
-						</CardContent>
-						<CardFooter className="flex justify-between">
-							<Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
-								Cancel
-							</Button>
-							<Button type="submit" disabled={isLoading}>
-								{isLoading ? "Saving..." : eventId ? "Update Event" : "Create Event"}
-							</Button>
-						</CardFooter>
-					</>}
-			</Card>
-		</form>
-	)
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="date">Date (MM-DD-YYYY)</Label>
+              <Input id="date" type="date" {...register("date")} />
+              {dateValue && (
+                <p className="text-xs text-muted-foreground">
+                  Will be displayed as: {formatDateForDisplay(dateValue)}
+                </p>
+              )}
+              {errors.date && (
+                <p className="text-xs text-destructive">{errors.date.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="time">Time</Label>
+              <Input id="time" type="time" {...register("time")} />
+              {errors.time && (
+                <p className="text-xs text-destructive">{errors.time.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="ticket_link">Ticket Link (Optional)</Label>
+            <Input
+              id="ticket_link"
+              placeholder="https://example.com/tickets"
+              {...register("ticket_link")}
+            />
+            {errors.ticket_link && (
+              <p className="text-xs text-destructive">{errors.ticket_link.message}</p>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : eventId ? "Update Event" : "Create Event"}
+          </Button>
+        </CardFooter>
+      </Card>
+    </form>
+  );
 }
-

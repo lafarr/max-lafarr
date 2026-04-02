@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button"
 import { EventsTable } from "@/components/dashboard/events-table"
 import Link from "next/link"
 import { PlusCircle } from "lucide-react"
+import { getEvents } from "@/lib/queries"
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const events = await getEvents();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -15,8 +18,7 @@ export default function EventsPage() {
           </Link>
         </Button>
       </div>
-      <EventsTable />
+      <EventsTable initialEvents={events} />
     </div>
   )
 }
-

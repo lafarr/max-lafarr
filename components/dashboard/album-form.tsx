@@ -1,207 +1,221 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Upload } from "lucide-react"
-import { Album, createAlbum, getAlbumById, updateAlbumById } from "@/lib/actions"
-import Image from 'next/image';
+import { createAlbum, updateAlbumById } from "@/lib/actions"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import Image from "next/image"
+import type { Album } from "@/lib/queries"
+
+const albumSchema = z.object({
+  title: z.string().min(1, "Album title is required"),
+  release_date: z.string().min(1, "Release date is required"),
+  streaming_platform: z.enum(["spotify", "soundcloud"], {
+    required_error: "Streaming platform is required",
+  }),
+  streaming_link: z.string().min(1, "Streaming link is required"),
+});
+
+type AlbumFormValues = z.infer<typeof albumSchema>;
 
 interface AlbumFormProps {
-	albumId?: string
+  albumId?: string;
+  initialAlbum?: Album;
 }
 
-export function AlbumForm({ albumId }: Readonly<AlbumFormProps>) {
-	const router = useRouter()
-	const ref = useRef<HTMLInputElement>(null);
-	const [isLoading, setIsLoading] = useState(false)
-	const [file, setFile] = useState<File | null>(null);
-	const [error, setError] = useState(false)
-	const [formData, setFormData] = useState<Album>({
-		title: '',
-		album_cover: '',
-		release_date: '',
-		streaming_link: '',
-		streaming_platform: ''
-	})
+export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
-	function getRemSize() {
-		const rootElement = document.documentElement;
-		const computedStyle = window.getComputedStyle(rootElement);
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<AlbumFormValues>({
+    resolver: zodResolver(albumSchema),
+    defaultValues: {
+      title: initialAlbum?.title ?? "",
+      release_date: initialAlbum?.release_date ?? "",
+      streaming_platform: (initialAlbum?.streaming_platform as "spotify" | "soundcloud") ?? "spotify",
+      streaming_link: initialAlbum?.streaming_link ?? "",
+    },
+  });
 
-		// Extract the font-size value
-		return parseFloat(computedStyle.fontSize);
-	}
+  const streamingPlatform = watch("streaming_platform");
+  const coverPreview = file ? URL.createObjectURL(file) : (initialAlbum?.album_cover ?? "");
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+  }
 
-	function getButtonText(isLoading: boolean, albumId?: string): string {
-		if (isLoading) {
-			return "Saving..."
-		}
-		if (albumId) {
-			return "Update Album"
-		}
-		return "Create Album"
-	}
+  async function onSubmit(data: AlbumFormValues) {
+    const payload: Album = {
+      title: data.title,
+      release_date: data.release_date,
+      streaming_platform: data.streaming_platform,
+      streaming_link: data.streaming_link,
+      album_cover: initialAlbum?.album_cover ?? "",
+      album_cover_key: initialAlbum?.album_cover_key,
+    };
 
-	useEffect(() => {
-		if (albumId) {
-			getAlbumById(parseInt(albumId))
-				.then((data) => {
-					setFormData(data[0]);
-					setError(false);
-				})
-				.catch((err) => {
-					console.error("Error fetching album:", err);
-					setError(true);
-				})
-		}
-	}, [albumId])
+    try {
+      if (albumId) {
+        await updateAlbumById(parseInt(albumId), payload, file);
+      } else {
+        if (!file) {
+          setError("root", { message: "Album cover image is required." });
+          return;
+        }
+        await createAlbum(payload, file);
+      }
+      router.push("/admin/albums");
+    } catch (err) {
+      console.error("Error saving album:", err);
+      setError("root", {
+        message: albumId
+          ? "Failed to update the album. Please try again later."
+          : "Failed to create the album. Please try again later.",
+      });
+    }
+  }
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target
-		setFormData((prev) => ({ ...prev, [name]: value }))
-	}
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          {errors.root && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{errors.root.message}</AlertDescription>
+            </Alert>
+          )}
 
-	const handleRadioChange = (value: string) => {
-		setFormData((prev) => ({ ...prev, streaming_platform: value }))
-	}
+          <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+            <div className="flex-1 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Album Title</Label>
+                <Input id="title" placeholder="Enter album title" {...register("title")} />
+                {errors.title && (
+                  <p className="text-xs text-destructive">{errors.title.message}</p>
+                )}
+              </div>
 
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault()
-		setIsLoading(true)
+              <div className="space-y-2">
+                <Label>Album Cover</Label>
+                <input
+                  id="pic"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
+                {!coverPreview ? (
+                  <div
+                    className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="text-white" />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4 w-48">
+                    <Image
+                      alt="Uploaded image"
+                      width={192}
+                      height={192}
+                      className="object-cover"
+                      src={coverPreview}
+                    />
+                    <Button type="button" className="bg-blue-500" onClick={() => fileInputRef.current?.click()}>
+                      Replace
+                    </Button>
+                  </div>
+                )}
+              </div>
 
-		if (albumId) {
-			try {
-				await updateAlbumById(parseInt(albumId), formData, file);
-			} catch (err: unknown) {
-				console.log(err);
-				setIsLoading(false);
-			}
-		}
-		else {
-			if (file) {
-				try {
-					await createAlbum(formData, file);
-				} catch (err: unknown) {
-					console.log((err as Error).message || 'An unexpected error occurred.');
-					setIsLoading(false);
-				}
-			}
-		}
-		setIsLoading(false);
-		router.push('/admin/albums');
-	}
+              <div className="space-y-2">
+                <Label htmlFor="release_date">Release Date (M/YYYY)</Label>
+                <Input
+                  id="release_date"
+                  type="month"
+                  placeholder="1/2025"
+                  {...register("release_date")}
+                />
+                {errors.release_date && (
+                  <p className="text-xs text-destructive">{errors.release_date.message}</p>
+                )}
+              </div>
 
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.value && event.target.files) {
-			setFile(event.target.files[0])
-		}
-	};
+              <div className="space-y-2">
+                <Label>Streaming Platform</Label>
+                <Controller
+                  control={control}
+                  name="streaming_platform"
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="spotify" id="spotify" />
+                        <Label htmlFor="spotify">Spotify</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="soundcloud" id="soundcloud" />
+                        <Label htmlFor="soundcloud">SoundCloud</Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+                {errors.streaming_platform && (
+                  <p className="text-xs text-destructive">{errors.streaming_platform.message}</p>
+                )}
+              </div>
 
-	return (
-		<form onSubmit={handleSubmit}>
-			<Card>
-				<CardContent className="space-y-4 pt-6">
-					{error && (
-						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center">
-							<svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-								<path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 01-1-1v-4a1 1 0 112 0v4a1 1 0 01-1 1z" clipRule="evenodd"></path>
-							</svg>
-							<div>
-								<p className="font-medium">Error retrieving album information</p>
-								<p className="text-sm">We encountered a problem loading this album. Please try again later.</p>
-							</div>
-						</div>
-					)}
-					<div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-						<div className="flex-1 space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="title">Album Title</Label>
-								<Input
-									id="title"
-									name="title"
-									placeholder="Enter album title"
-									value={formData.title}
-									onChange={handleChange}
-									required
-								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="title">Album Cover</Label>
-								<Input
-									id="pic"
-									name="pic"
-									type="file"
-									onChange={handleFileChange}
-									ref={ref}
-									className="hidden"
-								/>
-								{!file && !formData.album_cover && <div className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center" onClick={() => ref.current?.click()}>
-									<Upload className="text-white" />
-								</div>}
-								{(file || formData.album_cover) && (
-									<div className="flex flex-col gap-4 w-48">
-										<Image alt="Uploaded image" width={getRemSize() * 12} height={getRemSize() * 12} className="object-cover" src={file ? URL.createObjectURL(file) : formData.album_cover ?? ''} />
-										<Button type="button" className="bg-blue-500" onClick={() => ref.current?.click()}>Replace</Button>
-									</div>
-								)}
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="release_date">Release Date (M/YYYY)</Label>
-								<Input
-									id="releaseDate"
-									name="release_date"
-									type="month"
-									value={formData.release_date}
-									onChange={handleChange}
-									placeholder="1/2025"
-									required
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label>Streaming Platform</Label>
-								<RadioGroup value={formData.streaming_platform} onValueChange={handleRadioChange} className="flex space-x-4">
-									<div className="flex items-center space-x-2">
-										<RadioGroupItem value="spotify" id="spotify" />
-										<Label htmlFor="spotify">Spotify</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<RadioGroupItem value="soundcloud" id="soundcloud" />
-										<Label htmlFor="soundcloud">SoundCloud</Label>
-									</div>
-								</RadioGroup>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="streamingLink">{formData.streaming_platform === 'soundcloud' ? 'Streaming Link' : 'Spotify ID'}</Label>
-								<Input
-									id="streamingLink"
-									name="streaming_link"
-									placeholder={`Example: ${formData.streaming_platform === 'soundcloud' ? 'https://soundcloud.com/max-lafarr/sets/unanimity' : "5QlSo5Hgas50pzaufIlIxa"}`}
-									value={formData.streaming_link}
-									onChange={handleChange}
-									required
-								/>
-							</div>
-						</div>
-					</div>
-				</CardContent>
-				<CardFooter className="flex justify-between">
-					<Button type="button" variant="outline" onClick={() => router.push("/admin/albums")}>
-						Cancel
-					</Button>
-					<Button type="submit" disabled={isLoading}>
-						{getButtonText(isLoading, albumId)}
-					</Button>
-				</CardFooter>
-			</Card>
-		</form>
-	)
+              <div className="space-y-2">
+                <Label htmlFor="streaming_link">
+                  {streamingPlatform === "soundcloud" ? "Streaming Link" : "Spotify ID"}
+                </Label>
+                <Input
+                  id="streaming_link"
+                  placeholder={
+                    streamingPlatform === "soundcloud"
+                      ? "https://soundcloud.com/max-lafarr/sets/unanimity"
+                      : "5QlSo5Hgas50pzaufIlIxa"
+                  }
+                  {...register("streaming_link")}
+                />
+                {errors.streaming_link && (
+                  <p className="text-xs text-destructive">{errors.streaming_link.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button type="button" variant="outline" onClick={() => router.push("/admin/albums")}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : albumId ? "Update Album" : "Create Album"}
+          </Button>
+        </CardFooter>
+      </Card>
+    </form>
+  );
 }

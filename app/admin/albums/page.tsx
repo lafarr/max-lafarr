@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button"
 import { AlbumsGrid } from "@/components/dashboard/albums-grid"
 import Link from "next/link"
 import { PlusCircle } from "lucide-react"
+import { getAlbums } from "@/lib/queries"
 
-export default function AlbumsPage() {
+export default async function AlbumsPage() {
+  const albums = await getAlbums();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -15,8 +18,7 @@ export default function AlbumsPage() {
           </Link>
         </Button>
       </div>
-      <AlbumsGrid />
+      <AlbumsGrid initialAlbums={albums} />
     </div>
   )
 }
-
