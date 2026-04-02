@@ -6,7 +6,7 @@ import { HeroHeading } from '@/components/homepage/hero-heading';
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white relative flex items-center justify-center overflow-hidden">
-      {/* Parallax background */}
+      {/* Parallax background + overlay, colocated so overlay always paints above the composited layer */}
       <div className="absolute inset-0 z-0">
         <ParallaxHero className="w-full h-full">
           <div
@@ -18,10 +18,8 @@ export default function Home() {
             }}
           />
         </ParallaxHero>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-black/80" />
       </div>
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-black/80 z-10" />
 
       {/* Content */}
       <div className="container px-4 flex flex-col items-center justify-center text-center space-y-12 relative z-20">
