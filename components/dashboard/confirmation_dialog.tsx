@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -11,7 +11,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export function ConfirmationDialog({ confirmationText, confirmationAction, confirmationButtonColor }: Readonly<{ confirmationText: string, confirmationButtonColor: string, confirmationAction: () => any }>) {
+export function ConfirmationDialog({ confirmationText, confirmationAction, confirmationButtonColor }: Readonly<{ confirmationText: string, confirmationButtonColor: string, confirmationAction: () => void }>) {
 	const [open, setOpen] = React.useState(true);
 
 	return (

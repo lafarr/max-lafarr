@@ -32,7 +32,13 @@ export function EventForm({ eventId }: Readonly<EventFormProps>) {
 		if (eventId) {
 			getEventById(parseInt(eventId))
 				.then((event) => {
-					setFormData(event);
+					setFormData({
+						name: event.name,
+						location: event.location,
+						date: event.date,
+						time: event.time,
+						ticket_link: event.ticket_link ?? "",
+					});
 					setIsLoading(false);
 				})
 				.catch((error) => {

@@ -7,13 +7,12 @@ import { getEvents } from "@/lib/actions";
 import { useEffect, useState } from "react";
 
 interface Event {
-	id: string;
+	id?: number;
 	name: string;
 	date: string;
 	time: string;
-	venue: string;
 	location: string;
-	ticket_link: string;
+	ticket_link?: string;
 }
 
 export default function EventsPage() {

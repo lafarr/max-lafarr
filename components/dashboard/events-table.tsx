@@ -17,7 +17,7 @@ interface Event {
 	location: string;
 	date: string;
 	time: string;
-	ticket_link: string | undefined;
+	ticket_link?: string;
 }
 
 export function EventsTable() {
@@ -31,7 +31,7 @@ export function EventsTable() {
 
 	function handleDelete() {
 		const id = eventToDelete;
-		if (id) {
+		if (id !== undefined) {
 			setIsLoading(true);
 			setError(null);
 			deleteEvent(id);

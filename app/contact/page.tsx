@@ -38,7 +38,7 @@ export default function ContactPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit() {
     setIsSubmitting(true)
 
     // Simulate form submission
@@ -57,7 +57,7 @@ export default function ContactPage() {
         <div className="max-w-2xl mx-auto">
           <h1 className="artist-name text-4xl md:text-5xl font-normal mb-6 text-center">CONTACT</h1>
           <p className="text-gray-300 text-center mb-12">
-            Have a question or want to book Max LaFarr for a show? Send us a message and we'll get back to you as soon
+            Have a question or want to book Max LaFarr for a show? Send us a message and we&apos;ll get back to you as soon
             as possible.
           </p>
 

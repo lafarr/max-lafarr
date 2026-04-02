@@ -11,9 +11,6 @@ import {
   List,
   ListOrdered,
   LinkIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   Heading1,
   Heading2,
 } from "lucide-react"
@@ -162,32 +159,6 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           </PopoverContent>
         </Popover>
 
-        <Separator orientation="vertical" className="mx-1 h-6" />
-
-        <Toggle
-          size="sm"
-          pressed={editor.isActive({ textAlign: "left" })}
-          onPressedChange={() => editor.chain().focus().setTextAlign("left").run()}
-          aria-label="Align left"
-        >
-          <AlignLeft className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive({ textAlign: "center" })}
-          onPressedChange={() => editor.chain().focus().setTextAlign("center").run()}
-          aria-label="Align center"
-        >
-          <AlignCenter className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive({ textAlign: "right" })}
-          onPressedChange={() => editor.chain().focus().setTextAlign("right").run()}
-          aria-label="Align right"
-        >
-          <AlignRight className="h-4 w-4" />
-        </Toggle>
       </div>
       <div className="flex-1">
         <EditorContent editor={editor} className="h-full w-full p-3 prose prose-sm dark:prose-invert max-w-none" />
