@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -26,7 +28,7 @@ const navItems = [
 	},
 ]
 
-export function MobileNav() {
+export function MobileNav(): React.JSX.Element {
 	const [open, setOpen] = useState(false)
 	const pathname = usePathname()
 
@@ -43,7 +45,7 @@ export function MobileNav() {
 			</SheetTrigger>
 			<SheetContent side="left" className="pr-0 bg-background">
 				<div className="px-7">
-					<Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
+					<Link href="/" className="flex items-center" onClick={() => { setOpen(false); }}>
 						<span className="font-bold">Music CMS</span>
 					</Link>
 				</div>
@@ -59,7 +61,7 @@ export function MobileNav() {
 									isActive ? "bg-secondary text-secondary-foreground" : "hover:bg-muted hover:text-primary",
 								)}
 								asChild
-								onClick={() => setOpen(false)}
+								onClick={() => { setOpen(false); }}
 							>
 								<Link href={item.href}>
 									<item.icon className="mr-2 h-4 w-4" />
@@ -73,4 +75,3 @@ export function MobileNav() {
 		</Sheet>
 	)
 }
-

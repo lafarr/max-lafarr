@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 // import { NewsletterSubscribers } from "@/components/dashboard/newsletter-subscribers"
 // import { RichTextEditor } from "@/components/dashboard/rich-text-editor"
 
-export default function NewsletterPage() {
+export default function NewsletterPage(): never {
 	redirect('/admin/events');
 	// const [subject, setSubject] = useState("")
 	// const [content, setContent] = useState("")
@@ -89,4 +89,3 @@ export default function NewsletterPage() {
 	//   </div>
 	// )
 }
-

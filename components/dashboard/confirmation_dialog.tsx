@@ -11,7 +11,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export function ConfirmationDialog({ confirmationText, confirmationAction, confirmationButtonColor }: Readonly<{ confirmationText: string, confirmationButtonColor: string, confirmationAction: () => void }>) {
+export function ConfirmationDialog({ confirmationText, confirmationAction, confirmationButtonColor }: Readonly<{ confirmationText: string, confirmationButtonColor: string, confirmationAction: () => void }>): React.JSX.Element {
 	const [open, setOpen] = React.useState(true);
 
 	return (

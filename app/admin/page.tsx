@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
+export default function DashboardPage(): never {
 	redirect('/admin/events');
 }
-

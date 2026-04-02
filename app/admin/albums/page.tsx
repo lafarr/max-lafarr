@@ -1,10 +1,12 @@
+import type React from "react";
+
 import { Button } from "@/components/ui/button"
 import { AlbumsGrid } from "@/components/dashboard/albums-grid"
 import Link from "next/link"
 import { PlusCircle } from "lucide-react"
 import { getAlbums } from "@/lib/queries"
 
-export default async function AlbumsPage() {
+export default async function AlbumsPage(): Promise<React.JSX.Element> {
   const albums = await getAlbums();
 
   return (

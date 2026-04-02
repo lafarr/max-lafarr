@@ -1,5 +1,7 @@
 'use client';
 
+import type React from "react";
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -7,11 +9,11 @@ import { StaggerContainer, StaggerItem } from '@/components/animations';
 import { motion } from 'framer-motion';
 import type { Album } from '@/lib/queries';
 
-interface AlbumDialogGridProps {
+type AlbumDialogGridProps = {
   albums: Album[];
 }
 
-function renderEmbed(album: Album) {
+function renderEmbed(album: Album): React.JSX.Element {
   if (album.streaming_platform === 'soundcloud') {
     return (
       <iframe
@@ -35,7 +37,7 @@ function renderEmbed(album: Album) {
   );
 }
 
-export function AlbumDialogGrid({ albums }: AlbumDialogGridProps) {
+export function AlbumDialogGrid({ albums }: AlbumDialogGridProps): React.JSX.Element {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
 
   return (
@@ -46,7 +48,7 @@ export function AlbumDialogGrid({ albums }: AlbumDialogGridProps) {
             <DialogTrigger asChild>
               <motion.div
                 className="cursor-pointer"
-                onClick={() => setSelectedAlbum(album)}
+                onClick={() => { setSelectedAlbum(album); }}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
@@ -66,7 +68,7 @@ export function AlbumDialogGrid({ albums }: AlbumDialogGridProps) {
               <DialogTitle className="sr-only">
                 {selectedAlbum?.title ?? 'Album Player'}
               </DialogTitle>
-              {selectedAlbum && (
+              {selectedAlbum != null && (
                 <div className="w-full">{renderEmbed(selectedAlbum)}</div>
               )}
             </DialogContent>

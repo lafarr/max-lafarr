@@ -7,7 +7,7 @@ export default function DashboardLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
-}>) {
+}>): React.JSX.Element {
 	return (
 		<div className="flex min-h-screen flex-col bg-background">
 			<div className="border-b border-border">
@@ -32,4 +32,3 @@ export default function DashboardLayout({
 		</div>
 	)
 }
-

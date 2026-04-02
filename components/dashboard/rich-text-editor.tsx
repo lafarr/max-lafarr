@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
@@ -21,12 +22,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-interface RichTextEditorProps {
+type RichTextEditorProps = {
   value: string
   onChange: (value: string) => void
 }
 
-export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange }: RichTextEditorProps): React.JSX.Element | null {
   const [linkUrl, setLinkUrl] = useState("")
   const [linkOpen, setLinkOpen] = useState(false)
 
@@ -53,12 +54,12 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     },
   })
 
-  if (!editor) {
+  if (editor == null) {
     return null
   }
 
-  const addLink = () => {
-    if (linkUrl) {
+  const addLink = (): void => {
+    if (linkUrl !== "") {
       editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl }).run()
       setLinkUrl("")
       setLinkOpen(false)
@@ -144,7 +145,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
               <Input
                 placeholder="https://example.com"
                 value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
+                onChange={(e) => { setLinkUrl(e.target.value); }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault()
@@ -166,4 +167,3 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     </div>
   )
 }
-

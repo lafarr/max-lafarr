@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Album, Calendar } from "lucide-react"
@@ -24,7 +26,7 @@ const navItems = [
 	},
 ]
 
-export function DashboardNav() {
+export function DashboardNav(): React.JSX.Element {
 	const pathname = usePathname()
 
 	return (
@@ -51,4 +53,3 @@ export function DashboardNav() {
 		</nav>
 	)
 }
-

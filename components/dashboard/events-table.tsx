@@ -1,21 +1,22 @@
 "use client"
 
+import type React from "react";
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Edit, Search, Trash } from "lucide-react"
+import { Edit, Search, Trash , AlertCircle } from "lucide-react"
 import { type Event, deleteEvent } from "@/lib/actions"
 import { useRouter } from "next/navigation"
 import { ConfirmationDialog } from "./confirmation_dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
 
-interface EventsTableProps {
+type EventsTableProps = {
   initialEvents: Event[];
 }
 
-export function EventsTable({ initialEvents }: EventsTableProps) {
+export function EventsTable({ initialEvents }: EventsTableProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState("")
   const [confirmation, setConfirmation] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<number | undefined>(undefined);
@@ -28,7 +29,7 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
       event.location.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  function handleDelete() {
+  function handleDelete(): void {
     const id = eventToDelete;
     if (id !== undefined) {
       setError(null);
@@ -36,7 +37,7 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
         .then(() => {
           router.refresh();
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.error("Failed to delete event:", err);
           setError("Failed to delete the event. Please try again later.");
         });
@@ -45,7 +46,7 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
 
   return (
     <div className="space-y-4">
-      {error && (
+      {error != null && error !== '' && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -60,7 +61,7 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
             placeholder="Search events..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); }}
           />
         </div>
       </div>
@@ -84,11 +85,11 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
                 <TableCell>{formatDate(event.date)}</TableCell>
                 <TableCell>{formatTime(event.time)}</TableCell>
                 <TableCell>
-                  <span className="text-muted-foreground text-sm truncate block max-w-[200px]">{event.ticket_link}</span>
+                      <span className="text-muted-foreground text-sm truncate block max-w-[200px]">{event.ticket_link ?? ''}</span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => router.push(`/admin/events/${event.id}/edit`)}>
+                    <Button variant="ghost" size="icon" onClick={() => { if (event.id != null) { router.push(`/admin/events/${event.id}/edit`); } }}>
                       <Edit className="h-4 w-4" />
                       <span className="sr-only">Edit</span>
                     </Button>
@@ -114,20 +115,20 @@ export function EventsTable({ initialEvents }: EventsTableProps) {
   );
 }
 
-function formatDate(dateString: string) {
-  const dateParts = dateString.toString().split('-');
+function formatDate(dateString: string): string {
+  const dateParts = dateString.split('-');
   for (let i = 0; i < dateParts.length; ++i) {
     dateParts[i] = dateParts[i].replace(/^0/, '');
   }
   return `${dateParts[1]}-${dateParts[2]}-${dateParts[0]}`;
 }
 
-function formatTime(time: string) {
+function formatTime(time: string): string {
   const timeParts = time.split(':');
   let hours = timeParts[0];
   const mins = timeParts[1];
   hours = hours.replace(/^0/, '');
   const timeOfDay = parseInt(hours) < 12 ? 'AM' : 'PM';
-  if (parseInt(hours) > 12) hours = (parseInt(hours) - 12).toString();
+  if (parseInt(hours) > 12) {hours = (parseInt(hours) - 12).toString();}
   return `${hours}:${mins} ${timeOfDay.toUpperCase()}`;
 }

@@ -1,3 +1,5 @@
+import type React from "react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const activities = [
@@ -47,7 +49,7 @@ const activities = [
   },
 ]
 
-export function RecentActivity() {
+export function RecentActivity(): React.JSX.Element {
   return (
     <div className="space-y-8">
       {activities.map((activity) => (
@@ -67,4 +69,3 @@ export function RecentActivity() {
     </div>
   )
 }
-

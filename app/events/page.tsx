@@ -1,15 +1,17 @@
+import type React from "react";
+
 import { CalendarDays, MapPin, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { getEvents } from '@/lib/queries';
 import { FadeUp, SlideIn, StaggerContainer, StaggerItem } from '@/components/animations';
 import { TicketButton } from '@/components/events/ticket-button';
 
-function formatDate(date: string) {
+function formatDate(date: string): string {
   const [year, month, day] = date.split('-');
   return `${month.replace(/^0/, '')}-${day}-${year}`;
 }
 
-export default async function EventsPage() {
+export default async function EventsPage(): Promise<React.JSX.Element> {
   const events = await getEvents();
 
   return (
@@ -43,7 +45,7 @@ export default async function EventsPage() {
                           </div>
                         </div>
                         <div className="flex justify-start">
-                          {event.ticket_link && <TicketButton href={event.ticket_link} />}
+                          {event.ticket_link != null && event.ticket_link !== '' && <TicketButton href={event.ticket_link} />}
                         </div>
                       </div>
                     </CardContent>

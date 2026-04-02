@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, Controller } from "react-hook-form"
@@ -27,15 +29,17 @@ const albumSchema = z.object({
 
 type AlbumFormValues = z.infer<typeof albumSchema>;
 
-interface AlbumFormProps {
+type AlbumFormProps = {
   albumId?: string;
   initialAlbum?: Album;
 }
 
-export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
+export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>): React.JSX.Element {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  const defaultStreamingPlatform: AlbumFormValues["streaming_platform"] =
+    initialAlbum?.streaming_platform === "soundcloud" ? "soundcloud" : "spotify";
 
   const {
     register,
@@ -49,21 +53,30 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
     defaultValues: {
       title: initialAlbum?.title ?? "",
       release_date: initialAlbum?.release_date ?? "",
-      streaming_platform: (initialAlbum?.streaming_platform as "spotify" | "soundcloud") ?? "spotify",
+      streaming_platform: defaultStreamingPlatform,
       streaming_link: initialAlbum?.streaming_link ?? "",
     },
   });
 
   const streamingPlatform = watch("streaming_platform");
-  const coverPreview = file ? URL.createObjectURL(file) : (initialAlbum?.album_cover ?? "");
+  const coverPreview = file != null ? URL.createObjectURL(file) : (initialAlbum?.album_cover ?? "");
+  let submitLabel = "Create Album";
+  const isEditing = albumId != null && albumId !== "";
+  if (albumId != null && albumId !== "") {
+    submitLabel = "Update Album";
+  }
+  if (isSubmitting) {
+    submitLabel = "Saving...";
+  }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files?.[0]) {
-      setFile(e.target.files[0]);
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    const nextFile = e.target.files?.[0];
+    if (nextFile != null) {
+      setFile(nextFile);
     }
   }
 
-  async function onSubmit(data: AlbumFormValues) {
+  async function onSubmit(data: AlbumFormValues): Promise<void> {
     const payload: Album = {
       title: data.title,
       release_date: data.release_date,
@@ -74,10 +87,10 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
     };
 
     try {
-      if (albumId) {
+      if (isEditing) {
         await updateAlbumById(parseInt(albumId), payload, file);
       } else {
-        if (!file) {
+        if (file == null) {
           setError("root", { message: "Album cover image is required." });
           return;
         }
@@ -87,7 +100,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
     } catch (err) {
       console.error("Error saving album:", err);
       setError("root", {
-        message: albumId
+        message: isEditing
           ? "Failed to update the album. Please try again later."
           : "Failed to create the album. Please try again later.",
       });
@@ -95,10 +108,10 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={(event) => { void handleSubmit(onSubmit)(event).catch(() => undefined); }}>
       <Card>
         <CardContent className="space-y-4 pt-6">
-          {errors.root && (
+          {errors.root != null && (
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{errors.root.message}</AlertDescription>
             </Alert>
@@ -109,7 +122,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
               <div className="space-y-2">
                 <Label htmlFor="title">Album Title</Label>
                 <Input id="title" placeholder="Enter album title" {...register("title")} />
-                {errors.title && (
+                {errors.title != null && (
                   <p className="text-xs text-destructive">{errors.title.message}</p>
                 )}
               </div>
@@ -124,10 +137,10 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
                   ref={fileInputRef}
                   className="hidden"
                 />
-                {!coverPreview ? (
+                {coverPreview === "" ? (
                   <div
                     className="w-48 h-48 bg-neutral-800 cursor-pointer hover:opacity-50 flex justify-center items-center"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => { fileInputRef.current?.click(); }}
                   >
                     <Upload className="text-white" />
                   </div>
@@ -140,7 +153,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
                       className="object-cover"
                       src={coverPreview}
                     />
-                    <Button type="button" className="bg-blue-500" onClick={() => fileInputRef.current?.click()}>
+                    <Button type="button" className="bg-blue-500" onClick={() => { fileInputRef.current?.click(); }}>
                       Replace
                     </Button>
                   </div>
@@ -155,7 +168,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
                   placeholder="1/2025"
                   {...register("release_date")}
                 />
-                {errors.release_date && (
+                {errors.release_date != null && (
                   <p className="text-xs text-destructive">{errors.release_date.message}</p>
                 )}
               </div>
@@ -182,7 +195,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
                     </RadioGroup>
                   )}
                 />
-                {errors.streaming_platform && (
+                {errors.streaming_platform != null && (
                   <p className="text-xs text-destructive">{errors.streaming_platform.message}</p>
                 )}
               </div>
@@ -200,7 +213,7 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
                   }
                   {...register("streaming_link")}
                 />
-                {errors.streaming_link && (
+                {errors.streaming_link != null && (
                   <p className="text-xs text-destructive">{errors.streaming_link.message}</p>
                 )}
               </div>
@@ -208,11 +221,11 @@ export function AlbumForm({ albumId, initialAlbum }: Readonly<AlbumFormProps>) {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button type="button" variant="outline" onClick={() => router.push("/admin/albums")}>
+          <Button type="button" variant="outline" onClick={() => { router.push("/admin/albums"); }}>
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : albumId ? "Update Album" : "Create Album"}
+            {submitLabel}
           </Button>
         </CardFooter>
       </Card>

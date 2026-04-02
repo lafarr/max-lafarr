@@ -1,8 +1,10 @@
+import type React from "react";
+
 import Image from 'next/image';
 import { LoginForm } from './login-form';
 import { SlideIn } from '@/components/animations';
 
-export default function LoginPage() {
+export default function LoginPage(): React.JSX.Element {
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex flex-col md:flex-row overflow-hidden">
       <SlideIn direction="left" className="w-full md:w-1/2 md:h-screen">

@@ -1,10 +1,12 @@
+import type React from "react";
+
 import { Button } from "@/components/ui/button"
 import { EventsTable } from "@/components/dashboard/events-table"
 import Link from "next/link"
 import { PlusCircle } from "lucide-react"
 import { getEvents } from "@/lib/queries"
 
-export default async function EventsPage() {
+export default async function EventsPage(): Promise<React.JSX.Element> {
   const events = await getEvents();
 
   return (

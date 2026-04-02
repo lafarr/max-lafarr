@@ -1,7 +1,7 @@
 import 'next-auth';
 
 declare module 'next-auth' {
-  interface Session {
+  type Session = {
     user: {
       id: string;
       email: string;

@@ -1,8 +1,10 @@
+import type React from "react";
+
 import { getAlbums } from '@/lib/queries';
 import { FadeUp, SlideIn } from '@/components/animations';
 import { AlbumDialogGrid } from '@/components/discography/album-dialog-grid';
 
-export default async function DiscographyPage() {
+export default async function DiscographyPage(): Promise<React.JSX.Element> {
   const albums = await getAlbums();
 
   return (

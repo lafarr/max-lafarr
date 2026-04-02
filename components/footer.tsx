@@ -1,8 +1,10 @@
+import type React from "react";
+
 import Link from 'next/link';
 import { FaSpotify, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FadeUp } from '@/components/animations';
 
-export default function Footer() {
+export default function Footer(): React.JSX.Element {
   return (
     <footer className="bg-zinc-950 text-white border-t border-white/10">
       <FadeUp>

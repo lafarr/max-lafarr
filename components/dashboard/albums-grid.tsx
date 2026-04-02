@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -11,15 +13,15 @@ import { ConfirmationDialog } from "./confirmation_dialog"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-interface AlbumsGridProps {
+type AlbumsGridProps = {
   initialAlbums: Album[];
 }
 
-export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
+export function AlbumsGrid({ initialAlbums }: AlbumsGridProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [albumToDelete, setAlbumToDelete] = useState<number | undefined>(undefined);
-  const [deleteError, setDeleteError] = useState<boolean>(false);
+  const [deleteError, setDeleteError] = useState(false);
   const router = useRouter();
 
   const filteredAlbums = initialAlbums.filter(
@@ -29,15 +31,15 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
       album.streaming_platform.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  function handleDelete() {
+  function handleDelete(): void {
     const id = albumToDelete;
-    if (id) {
+    if (id !== undefined) {
       setDeleteError(false);
       deleteAlbumById(id)
         .then(() => {
           router.refresh();
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error("Error deleting album:", error);
           setDeleteError(true);
         });
@@ -63,7 +65,7 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
             placeholder="Search albums by title, date, or platform..."
             className="pl-8"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); }}
           />
         </div>
       </div>
@@ -72,22 +74,25 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
         {filteredAlbums.map((album) => (
           <Card key={album.id} className="overflow-hidden">
             <div className="relative aspect-square">
-              <Image src={album.album_cover || "/placeholder.svg"} alt={album.title} fill className="object-cover" />
+              <Image src={album.album_cover ?? "/placeholder.svg"} alt={album.title} fill className="object-cover" />
             </div>
             <CardContent className="p-4">
               <h3 className="font-semibold mb-1">{album.title}</h3>
               <p className="text-sm text-muted-foreground">Released: {album.release_date}</p>
               <div className="mt-2">
                 <p className="text-sm text-muted-foreground">Platform: {album.streaming_platform}</p>
-                <p className="text-xs text-muted-foreground truncate mt-1">{`${album.streaming_platform === 'spotify' ? 'Spotify ID: ' : 'SoundCloud link: '} ${album.streaming_link}`}</p>
+                <p className="text-xs text-muted-foreground truncate mt-1">
+                  {album.streaming_platform === 'spotify' ? 'Spotify ID: ' : 'SoundCloud link: '}
+                  {album.streaming_link}
+                </p>
               </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 flex justify-between">
-              <Button variant="outline" size="sm" onClick={() => router.push(`/admin/albums/${album.id}/edit`)}>
+              <Button variant="outline" size="sm" onClick={() => { if (album.id != null) { router.push(`/admin/albums/${album.id}/edit`); } }}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => { setAlbumToDelete(album.id); setShowDeleteModal(true); }}>
+              <Button variant="ghost" size="icon" onClick={() => { if (album.id != null) { setAlbumToDelete(album.id); setShowDeleteModal(true); } }}>
                 <Trash className="h-4 w-4" />
                 <span className="sr-only">Delete</span>
               </Button>

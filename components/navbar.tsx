@@ -1,5 +1,7 @@
 'use client';
 
+import type React from "react";
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
@@ -34,16 +36,19 @@ const socialLinks = [
   },
 ];
 
-export default function Navbar() {
+export default function Navbar(): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    function onScroll() {
+    function onScroll(): void {
       setScrolled(window.scrollY > 40);
     }
+    function cleanup(): void {
+      window.removeEventListener('scroll', onScroll);
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return cleanup;
   }, []);
 
   return (
@@ -107,7 +112,7 @@ export default function Navbar() {
                     >
                       <Link
                         href={link.href}
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => { setIsOpen(false); }}
                         className="text-2xl hover:text-gray-300 transition-colors font-medium tracking-wider"
                       >
                         {link.label}

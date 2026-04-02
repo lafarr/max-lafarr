@@ -1,9 +1,11 @@
 'use client';
 
+import type React from "react";
+
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
-export function TicketButton({ href }: { href: string }) {
+export function TicketButton({ href }: { href: string }): React.JSX.Element {
   return (
     <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
       <Button asChild className="bg-white text-black hover:bg-gray-200 px-6 sm:px-8">

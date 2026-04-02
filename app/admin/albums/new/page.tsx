@@ -1,6 +1,8 @@
+import type React from "react";
+
 import { AlbumForm } from "@/components/dashboard/album-form"
 
-export default function NewAlbumPage() {
+export default function NewAlbumPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Add New Album</h2>
@@ -8,4 +10,3 @@ export default function NewAlbumPage() {
     </div>
   )
 }
-

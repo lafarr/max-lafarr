@@ -1,23 +1,25 @@
 'use client';
 
+import type React from "react";
+
 import { motion, useReducedMotion } from 'framer-motion';
 
-interface FadeUpProps {
+type FadeUpProps = {
   children: React.ReactNode;
   delay?: number;
   className?: string;
 }
 
-export function FadeUp({ children, delay = 0, className }: FadeUpProps) {
+export function FadeUp({ children, delay = 0, className }: FadeUpProps): React.JSX.Element {
   const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
       className={className}
-      initial={{ opacity: shouldReduce ? 1 : 0, y: shouldReduce ? 0 : 20 }}
+      initial={{ opacity: shouldReduce === true ? 1 : 0, y: shouldReduce === true ? 0 : 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={
-        shouldReduce
+        shouldReduce === true
           ? { duration: 0 }
           : { duration: 0.65, delay, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] }
       }

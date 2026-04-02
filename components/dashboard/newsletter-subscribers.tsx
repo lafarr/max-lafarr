@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,12 +11,12 @@ import { LoaderCircle, MoreHorizontal, Search, AlertCircle } from "lucide-react"
 import { getSubData, deleteSub } from "@/lib/actions"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export function NewsletterSubscribers() {
+export function NewsletterSubscribers(): React.JSX.Element {
 	const [searchTerm, setSearchTerm] = useState("")
-	const [filteredSubscribers, setFilteredSubscribers] = useState<{ id: number, email: string, createdAt: string }[]>([]);
-	const [subs, setSubs] = useState<{ id: number, email: string, createdAt: string }[]>([])
+	const [filteredSubscribers, setFilteredSubscribers] = useState<Array<{ id: number, email: string, createdAt: string }>>([]);
+	const [subs, setSubs] = useState<Array<{ id: number, email: string, createdAt: string }>>([])
 	const [haveFetched, setHaveFetched] = useState(false);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	function handleDelete(id: number): void {
@@ -34,13 +36,13 @@ export function NewsletterSubscribers() {
 						)
 						setIsLoading(false);
 					})
-					.catch(err => {
+					.catch((err: unknown) => {
 						console.error("Failed to fetch subscribers after deletion:", err);
 						setError("Failed to refresh subscriber list. Please try again later.");
 						setIsLoading(false);
 					})
 			})
-			.catch(err => {
+			.catch((err: unknown) => {
 				console.error("Failed to delete subscriber:", err);
 				setError("Failed to delete the subscriber. Please try again later.");
 				setIsLoading(false);
@@ -62,7 +64,7 @@ export function NewsletterSubscribers() {
 					)
 					setIsLoading(false);
 				})
-				.catch(err => {
+				.catch((err: unknown) => {
 					console.error("Failed to fetch subscribers:", err);
 					setError("Failed to load subscribers. Please try again later.");
 					setIsLoading(false);
@@ -86,7 +88,7 @@ export function NewsletterSubscribers() {
 	} else {
 		return (
 			<div className="space-y-4">
-				{error && (
+				{error != null && error !== '' && (
 					<Alert variant="destructive">
 						<AlertCircle className="h-4 w-4" />
 						<AlertTitle>Error</AlertTitle>
@@ -101,7 +103,7 @@ export function NewsletterSubscribers() {
 							placeholder="Search by email..."
 							className="pl-8"
 							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
+							onChange={(e) => { setSearchTerm(e.target.value); }}
 						/>
 					</div>
 				</div>
@@ -128,7 +130,7 @@ export function NewsletterSubscribers() {
 												</Button>
 											</DropdownMenuTrigger>
 											<DropdownMenuContent align="end">
-												<DropdownMenuItem onClick={() => handleDelete(subscriber.id)}>Delete</DropdownMenuItem>
+												<DropdownMenuItem onClick={() => { handleDelete(subscriber.id); }}>Delete</DropdownMenuItem>
 											</DropdownMenuContent>
 										</DropdownMenu>
 									</TableCell>

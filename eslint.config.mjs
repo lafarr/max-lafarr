@@ -4,23 +4,71 @@ import globals from "globals";
 import importPlugin from "eslint-plugin-import";
 import tseslint from "typescript-eslint";
 
+const typedFiles = ["**/*.{ts,tsx,js,jsx,mjs,cjs}"];
+const typedIgnores = ["eslint.config.mjs", "next.config.mjs", "postcss.config.mjs"];
+
 export default tseslint.config(
   {
     ignores: [
+      ".next",
       ".next/**",
+      "**/.next/**",
       "node_modules/**",
       "dist/**",
       "coverage/**",
-      "postcss.config.mjs",
-      "eslint.config.mjs",
       "supabase/functions/send-winner-email/index.ts",
     ],
   },
-  js.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
   {
-    files: ["**/*.{ts,tsx,js,jsx,mjs,cjs}"],
+    plugins: {
+      "@next/next": nextPlugin,
+      import: importPlugin,
+    },
+    settings: {
+      next: {
+        rootDir: ".",
+      },
+      "import/resolver": {
+        typescript: true,
+      },
+    },
+  },
+  {
+    files: ["eslint.config.mjs", "next.config.mjs", "postcss.config.mjs"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: {
+      "@next/next": nextPlugin,
+      import: importPlugin,
+    },
+    settings: {
+      next: {
+        rootDir: ".",
+      },
+      "import/resolver": {
+        typescript: true,
+      },
+    },
+  },
+  js.configs.recommended,
+  ...tseslint.configs.strictTypeChecked.map((config) => ({
+    ...config,
+    files: typedFiles,
+    ignores: typedIgnores,
+  })),
+  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+    ...config,
+    files: typedFiles,
+    ignores: typedIgnores,
+  })),
+  {
+    files: typedFiles,
+    ignores: typedIgnores,
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
@@ -57,7 +105,6 @@ export default tseslint.config(
       curly: ["error", "all"],
       "no-implicit-coercion": "error",
       "no-throw-literal": "error",
-      "no-return-await": "error",
       "no-unreachable-loop": "error",
       "no-param-reassign": "error",
       "no-nested-ternary": "error",
@@ -223,22 +270,6 @@ export default tseslint.config(
           ignoreStatic: true,
         },
       ],
-      "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          args: "all",
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrors: "all",
-          caughtErrorsIgnorePattern: "^_",
-          ignoreRestSiblings: false,
-        },
-      ],
     },
-  },
-  {
-    files: ["**/*.js", "**/*.jsx"],
-    ...tseslint.configs.disableTypeChecked,
   },
 );

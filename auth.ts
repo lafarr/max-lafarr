@@ -18,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       async authorize(credentials) {
         const parsed = credentialsSchema.safeParse(credentials);
-        if (!parsed.success) return null;
+        if (!parsed.success) {return null;}
 
         const { email, password } = parsed.data;
 
@@ -29,15 +29,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .select('id, email, password_hash')
             .eq('email', email)
             .single();
-          if (!error) user = data;
+          if (error == null) {user = data;}
         } catch {
           return null;
         }
 
         // Always run bcrypt to prevent timing-based user enumeration.
-        const hashToCompare = user ? user.password_hash : DUMMY_HASH;
+        const hashToCompare = user != null ? user.password_hash : DUMMY_HASH;
         const isValid = await bcrypt.compare(password, hashToCompare);
-        if (!isValid || !user) return null;
+        if (!isValid || user == null) {return null;}
 
         return { id: user.id, email: user.email };
       },
@@ -50,11 +50,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.id = user.id;
+    jwt({ token, user }) {
+      token.id = user.id;
       return token;
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       if (typeof token.id === 'string') {
         session.user.id = token.id;
       }

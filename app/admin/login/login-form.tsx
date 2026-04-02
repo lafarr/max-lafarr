@@ -1,5 +1,7 @@
 'use client';
 
+import type React from "react";
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
@@ -30,7 +32,7 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
 };
 
-export function LoginForm() {
+export function LoginForm(): React.JSX.Element {
   const router = useRouter();
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -39,7 +41,7 @@ export function LoginForm() {
     defaultValues: { email: '', password: '' },
   });
 
-  async function onSubmit(values: LoginValues) {
+  async function onSubmit(values: LoginValues): Promise<void> {
     setAuthError(null);
     const result = await signIn('credentials', {
       email: values.email,
@@ -47,7 +49,7 @@ export function LoginForm() {
       redirect: false,
     });
 
-    if (result?.error) {
+    if (result.error != null) {
       setAuthError('Invalid email or password.');
       return;
     }
@@ -71,8 +73,8 @@ export function LoginForm() {
       </motion.h1>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {authError && (
+        <form onSubmit={(event) => { void form.handleSubmit(onSubmit)(event).catch(() => undefined); }} className="space-y-5">
+          {authError != null && authError !== '' && (
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

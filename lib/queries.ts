@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { supabase } from './supabase';
 
-export interface Album {
+export type Album = {
   id?: number;
   title: string;
   album_cover?: string;
@@ -11,7 +11,7 @@ export interface Album {
   streaming_platform: string;
 }
 
-export interface Event {
+export type Event = {
   id?: number;
   name: string;
   location: string;
@@ -20,17 +20,20 @@ export interface Event {
   ticket_link?: string;
 }
 
-export interface Subscriber {
+export type Subscriber = {
   id: number;
   email: string;
   createdAt: string;
 }
 
+type RawSubscriber = { id: number; email: string; created_at: string };
+
 export const getAlbums = unstable_cache(
   async (): Promise<Album[]> => {
-    const { data, error } = await supabase.from('albums').select();
-    if (error) throw new Error(error.message);
-    return (data ?? []).sort((a, b) => {
+    const { data: rawData, error } = await supabase.from('albums').select();
+    if (error != null) { throw new Error(error.message); }
+    const data = rawData as unknown as Album[];
+    return data.sort((a, b) => {
       const [aMonth, aYear] = a.release_date.split('/');
       const [bMonth, bYear] = b.release_date.split('/');
       return new Date(parseInt(bYear), parseInt(bMonth) - 1).getTime() -
@@ -43,9 +46,9 @@ export const getAlbums = unstable_cache(
 
 export const getAlbumById = unstable_cache(
   async (id: number): Promise<Album[]> => {
-    const { data, error } = await supabase.from('albums').select().eq('id', id);
-    if (error) throw new Error(error.message);
-    return data ?? [];
+    const { data: rawData, error } = await supabase.from('albums').select().eq('id', id);
+    if (error != null) { throw new Error(error.message); }
+    return rawData as unknown as Album[];
   },
   ['album-by-id'],
   { tags: ['albums'] }
@@ -53,9 +56,9 @@ export const getAlbumById = unstable_cache(
 
 export const getEvents = unstable_cache(
   async (): Promise<Event[]> => {
-    const { data, error } = await supabase.from('events').select();
-    if (error) throw new Error(error.message);
-    return data ?? [];
+    const { data: rawData, error } = await supabase.from('events').select();
+    if (error != null) { throw new Error(error.message); }
+    return rawData as unknown as Event[];
   },
   ['events'],
   { tags: ['events'] }
@@ -63,9 +66,10 @@ export const getEvents = unstable_cache(
 
 export const getEventById = unstable_cache(
   async (id: number): Promise<Event | undefined> => {
-    const { data, error } = await supabase.from('events').select().eq('id', id);
-    if (error) throw new Error(error.message);
-    return data?.[0];
+    const { data: rawData, error } = await supabase.from('events').select().eq('id', id);
+    if (error != null) { throw new Error(error.message); }
+    const data = rawData as unknown as Event[];
+    return data[0];
   },
   ['event-by-id'],
   { tags: ['events'] }
@@ -73,9 +77,10 @@ export const getEventById = unstable_cache(
 
 export const getSubData = unstable_cache(
   async (): Promise<Subscriber[]> => {
-    const { data, error } = await supabase.from('subscribers').select();
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((row) => {
+    const { data: rawData, error } = await supabase.from('subscribers').select();
+    if (error != null) { throw new Error(error.message); }
+    const data = rawData as unknown as RawSubscriber[];
+    return data.map((row) => {
       const d = new Date(row.created_at);
       const month = (d.getMonth() + 1).toString();
       const day = d.getDate().toString();

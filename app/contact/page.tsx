@@ -1,5 +1,7 @@
 'use client';
 
+import type React from "react";
+
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -19,7 +21,7 @@ const formSchema = z.object({
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
-export default function ContactPage() {
+export default function ContactPage(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -27,7 +29,7 @@ export default function ContactPage() {
     defaultValues: { name: '', email: '', subject: '', message: '' },
   });
 
-  function onSubmit() {
+  function onSubmit(): void {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -54,7 +56,7 @@ export default function ContactPage() {
 
           <FadeUp delay={0.3}>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={(event) => { void form.handleSubmit(onSubmit)(event).catch(() => undefined); }} className="space-y-6">
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6" staggerDelay={0.06}>
                   <StaggerItem>
                     <FormField

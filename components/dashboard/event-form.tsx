@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react";
+
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -22,12 +24,12 @@ const eventSchema = z.object({
 
 type EventFormValues = z.infer<typeof eventSchema>;
 
-interface EventFormProps {
+type EventFormProps = {
   eventId?: string;
   initialEvent?: Event;
 }
 
-export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
+export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>): React.JSX.Element {
   const router = useRouter();
 
   const {
@@ -48,8 +50,16 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
   });
 
   const dateValue = watch("date");
+  let submitLabel = "Create Event";
+  const isEditing = eventId != null && eventId !== "";
+  if (eventId != null && eventId !== "") {
+    submitLabel = "Update Event";
+  }
+  if (isSubmitting) {
+    submitLabel = "Saving...";
+  }
 
-  async function onSubmit(data: EventFormValues) {
+  async function onSubmit(data: EventFormValues): Promise<void> {
     const payload = {
       name: data.name,
       location: data.location,
@@ -59,7 +69,7 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
     };
 
     try {
-      if (eventId) {
+      if (isEditing) {
         await updateEventById(parseInt(eventId), payload);
       } else {
         await createEvent(payload);
@@ -68,24 +78,24 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
     } catch (err) {
       console.error("Error saving event:", err);
       setError("root", {
-        message: eventId
+        message: isEditing
           ? "Failed to update the event. Please try again later."
           : "Failed to create the event. Please try again later.",
       });
     }
   }
 
-  function formatDateForDisplay(dateString: string) {
-    if (!dateString) return "";
+  function formatDateForDisplay(dateString: string): string {
+    if (dateString === "") {return "";}
     const [year, month, day] = dateString.split("-");
     return `${month.replace(/^0/, "")}-${day}-${year}`;
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={(event) => { void handleSubmit(onSubmit)(event).catch(() => undefined); }}>
       <Card>
         <CardContent className="space-y-4 pt-6">
-          {errors.root && (
+          {errors.root != null && (
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{errors.root.message}</AlertDescription>
             </Alert>
@@ -99,7 +109,7 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
                 placeholder="Enter event name"
                 {...register("name")}
               />
-              {errors.name && (
+              {errors.name != null && (
                 <p className="text-xs text-destructive">{errors.name.message}</p>
               )}
             </div>
@@ -110,7 +120,7 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
                 placeholder="Enter event location"
                 {...register("location")}
               />
-              {errors.location && (
+              {errors.location != null && (
                 <p className="text-xs text-destructive">{errors.location.message}</p>
               )}
             </div>
@@ -120,19 +130,19 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
             <div className="space-y-2">
               <Label htmlFor="date">Date (MM-DD-YYYY)</Label>
               <Input id="date" type="date" {...register("date")} />
-              {dateValue && (
+              {dateValue !== "" && (
                 <p className="text-xs text-muted-foreground">
                   Will be displayed as: {formatDateForDisplay(dateValue)}
                 </p>
               )}
-              {errors.date && (
+              {errors.date != null && (
                 <p className="text-xs text-destructive">{errors.date.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="time">Time</Label>
               <Input id="time" type="time" {...register("time")} />
-              {errors.time && (
+              {errors.time != null && (
                 <p className="text-xs text-destructive">{errors.time.message}</p>
               )}
             </div>
@@ -145,17 +155,17 @@ export function EventForm({ eventId, initialEvent }: Readonly<EventFormProps>) {
               placeholder="https://example.com/tickets"
               {...register("ticket_link")}
             />
-            {errors.ticket_link && (
+            {errors.ticket_link != null && (
               <p className="text-xs text-destructive">{errors.ticket_link.message}</p>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
+          <Button type="button" variant="outline" onClick={() => { router.push("/admin/events"); }}>
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : eventId ? "Update Event" : "Create Event"}
+            {submitLabel}
           </Button>
         </CardFooter>
       </Card>

@@ -1,12 +1,14 @@
+import type React from "react";
+
 import { EventForm } from "@/components/dashboard/event-form"
 import { getEventById } from "@/lib/queries"
 import { notFound } from "next/navigation"
 
-export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }): Promise<React.JSX.Element> {
   const { id } = await params;
   const event = await getEventById(parseInt(id));
 
-  if (!event) {
+  if (event == null) {
     notFound();
   }
 
