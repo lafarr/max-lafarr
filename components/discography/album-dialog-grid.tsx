@@ -50,6 +50,7 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                 width={500}
                 height={500}
+                loading="eager"
               />
             </div>
           </div>
