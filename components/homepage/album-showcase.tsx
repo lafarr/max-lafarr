@@ -40,6 +40,7 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
           whileHover={{ scale: 1.03, y: -6 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           onPointerEnter={handleHover}
+          onPointerDown={() => { setOpen(true); }}
         >
           <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-white/[0.03] transition-all duration-500 hover:border-white/20 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
             <div className="relative aspect-square overflow-hidden">

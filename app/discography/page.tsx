@@ -24,7 +24,9 @@ export default async function DiscographyPage(): Promise<React.JSX.Element> {
             </p>
           </FadeUp>
 
-          <div className="mt-14 sm:mt-16">
+          <div className="section-divider mt-14 sm:mt-16 mb-14" />
+
+          <div className="mt-0">
             <LiveDiscographyContent initialAlbums={albums} />
           </div>
         </div>

@@ -1,8 +1,8 @@
 import type React from "react";
 
-import Link from 'next/link';
 import { FaSpotify, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FadeUp } from '@/components/animations';
+import { PressLink } from '@/components/ui/press-link';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -49,13 +49,13 @@ export default function Footer(): React.JSX.Element {
               <p className="mb-5 text-[0.62rem] uppercase tracking-[0.38em] text-zinc-600">Navigate</p>
               <div className="flex flex-col gap-2">
                 {navLinks.map((link) => (
-                  <Link
+                  <PressLink
                     key={link.href}
                     href={link.href}
                     className="w-fit text-sm tracking-[0.06em] text-zinc-500 transition-colors duration-300 hover:text-white"
                   >
                     {link.label}
-                  </Link>
+                  </PressLink>
                 ))}
               </div>
             </div>
@@ -64,7 +64,7 @@ export default function Footer(): React.JSX.Element {
               <p className="mb-5 text-[0.62rem] uppercase tracking-[0.38em] text-zinc-600">Follow</p>
               <div className="flex items-center gap-3">
                 {socialLinks.map((s) => (
-                  <Link
+                  <PressLink
                     key={s.label}
                     href={s.href}
                     target="_blank"
@@ -72,7 +72,7 @@ export default function Footer(): React.JSX.Element {
                   >
                     {s.icon}
                     <span className="sr-only">{s.label}</span>
-                  </Link>
+                  </PressLink>
                 ))}
               </div>
             </div>

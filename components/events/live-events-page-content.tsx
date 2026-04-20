@@ -12,8 +12,14 @@ type LiveEventsPageContentProps = {
   initialEvents: Event[];
 };
 
+function getESTDateString(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+}
+
 export function LiveEventsPageContent({ initialEvents }: LiveEventsPageContentProps): React.JSX.Element {
-  const events = useQuery(api.music.listEvents) ?? initialEvents;
+  const allEvents = useQuery(api.music.listEvents) ?? initialEvents;
+  const today = getESTDateString();
+  const events = allEvents.filter((event) => event.date >= today);
 
   if (events.length === 0) {
     return (

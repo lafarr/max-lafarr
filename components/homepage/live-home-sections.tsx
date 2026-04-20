@@ -2,11 +2,11 @@
 
 import type React from 'react';
 
-import Link from 'next/link';
 import { useQuery } from 'convex/react';
 import { ArrowRight, CalendarDays, MapPin } from 'lucide-react';
 import { FadeUp } from '@/components/animations';
 import { AlbumShowcase } from '@/components/homepage/album-showcase';
+import { PressLink } from '@/components/ui/press-link';
 import { api } from '@/convex/_generated/api';
 import { sortAlbumsByReleaseDateDesc } from '@/lib/music';
 import type { Album, Event } from '@/lib/queries';
@@ -48,13 +48,13 @@ export function LiveHomeSections({ initialAlbums, initialEvents }: LiveHomeSecti
                   <p className="text-sm leading-7 text-zinc-500">
                     Recorded with depth, texture, and atmosphere. Step into the newest material and trace the catalog from its sharpest edges outward.
                   </p>
-                  <Link
+                  <PressLink
                     href="/discography"
                     className="group flex w-fit items-center gap-2 text-[0.72rem] uppercase tracking-[0.3em] text-white/50 transition-colors duration-300 hover:text-white"
                   >
                     Full Discography
                     <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
+                  </PressLink>
                 </div>
               </div>
             </FadeUp>
@@ -114,13 +114,13 @@ export function LiveHomeSections({ initialAlbums, initialEvents }: LiveHomeSecti
                         </div>
                       </div>
                       {event.ticket_link != null && event.ticket_link !== '' && (
-                        <Link
+                        <PressLink
                           href={event.ticket_link}
                           target="_blank"
                           className="w-fit rounded-full border border-white/15 bg-white/[0.06] px-6 py-3 text-[0.68rem] font-medium uppercase tracking-[0.3em] text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/[0.1] hover:text-white"
                         >
                           Get Tickets
-                        </Link>
+                        </PressLink>
                       )}
                     </div>
                   </div>
@@ -130,13 +130,13 @@ export function LiveHomeSections({ initialAlbums, initialEvents }: LiveHomeSecti
 
             <FadeUp delay={0.3}>
               <div className="mt-10 flex justify-end">
-                <Link
+                <PressLink
                   href="/events"
                   className="group flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.3em] text-white/50 transition-colors duration-300 hover:text-white"
                 >
                   All Events
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                </Link>
+                </PressLink>
               </div>
             </FadeUp>
           </div>

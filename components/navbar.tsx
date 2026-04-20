@@ -109,6 +109,8 @@ export default function Navbar(): React.JSX.Element {
                 <Link
                   href={s.href}
                   target="_blank"
+                  onPointerDown={() => { window.open(s.href, '_blank'); }}
+                  onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}
                   className="flex size-9 items-center justify-center rounded-full text-white/70 transition-colors duration-300 hover:bg-white/[0.08] hover:text-white"
                 >
                   {s.icon}
@@ -163,9 +165,7 @@ export default function Navbar(): React.JSX.Element {
                           <Link
                             href={link.href}
                             aria-current={isActive ? 'page' : undefined}
-                            onClick={() => {
-                              setIsOpen(false);
-                            }}
+                            onClick={() => { setIsOpen(false); }}
                             className={cn(
                               'flex items-center justify-between rounded-[1.4rem] border px-5 py-4 transition-all duration-300',
                               isActive
@@ -200,6 +200,8 @@ export default function Navbar(): React.JSX.Element {
                           <Link
                             href={s.href}
                             target="_blank"
+                            onPointerDown={() => { window.open(s.href, '_blank'); }}
+                            onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}
                             className="flex size-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
                           >
                             {s.icon}

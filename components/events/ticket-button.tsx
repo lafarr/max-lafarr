@@ -12,7 +12,7 @@ export function TicketButton({ href }: { href: string }): React.JSX.Element {
         asChild
         className="h-12 rounded-full border border-white bg-white px-6 text-[0.68rem] font-medium uppercase tracking-[0.32em] text-black transition-all duration-300 hover:bg-zinc-200 hover:shadow-[0_20px_50px_-20px_rgba(255,255,255,0.25)] sm:px-8"
       >
-        <a href={href}>GET TICKETS</a>
+        <a href={href} onPointerDown={() => { window.open(href, '_blank'); }} onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}>GET TICKETS</a>
       </Button>
     </motion.div>
   );

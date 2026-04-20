@@ -24,7 +24,9 @@ export default async function EventsPage(): Promise<React.JSX.Element> {
             </p>
           </FadeUp>
 
-          <div className="mx-auto mt-14 max-w-5xl sm:mt-16">
+          <div className="section-divider mt-14 sm:mt-16 mb-14" />
+
+          <div className="mx-auto max-w-5xl">
             <LiveEventsPageContent initialEvents={events} />
           </div>
         </div>
