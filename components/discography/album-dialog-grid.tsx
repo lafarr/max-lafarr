@@ -51,7 +51,6 @@ function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): R
                 width={500}
                 height={500}
                 priority={priority}
-                loading={priority === true ? undefined : 'eager'}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </div>
