@@ -3,7 +3,7 @@
 import type React from "react";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Menu } from 'lucide-react';
@@ -42,6 +42,22 @@ export default function Navbar(): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  function handleNavMouseDown(e: React.MouseEvent<HTMLAnchorElement>, href: string): void {
+    const url = new URL(href, window.location.href);
+    if (
+      url.origin === window.location.origin &&
+      e.button === 0 &&
+      !e.altKey &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.shiftKey
+    ) {
+      e.preventDefault();
+      router.push(href);
+    }
+  }
 
   useEffect(() => {
     function onScroll(): void {
@@ -68,7 +84,7 @@ export default function Navbar(): React.JSX.Element {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.14),transparent_34%),linear-gradient(115deg,rgba(255,255,255,0.08),transparent_24%,transparent_72%,rgba(255,255,255,0.05))]" />
         <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
-        <Link href="/" className="group relative z-10 flex min-w-0 items-center gap-3">
+        <Link href="/" prefetch={true} onMouseDown={(e) => { handleNavMouseDown(e, '/'); }} className="group relative z-10 flex min-w-0 items-center gap-3">
           <span className="flex size-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-[0.65rem] font-semibold tracking-[0.35em] text-amber-accent/70 transition-colors duration-300 group-hover:text-amber-accent">
             ML
           </span>
@@ -88,7 +104,9 @@ export default function Navbar(): React.JSX.Element {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={true}
                 aria-current={isActive ? 'page' : undefined}
+                onMouseDown={(e) => { handleNavMouseDown(e, link.href); }}
                 className={cn(
                   'rounded-full px-4 py-2 text-[0.68rem] font-medium tracking-[0.3em] transition-all duration-300',
                   isActive
@@ -164,7 +182,9 @@ export default function Navbar(): React.JSX.Element {
                         >
                           <Link
                             href={link.href}
+                            prefetch={true}
                             aria-current={isActive ? 'page' : undefined}
+                            onMouseDown={(e) => { handleNavMouseDown(e, link.href); setIsOpen(false); }}
                             onClick={() => { setIsOpen(false); }}
                             className={cn(
                               'flex items-center justify-between rounded-[1.4rem] border px-5 py-4 transition-all duration-300',

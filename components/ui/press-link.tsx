@@ -2,18 +2,20 @@
 
 import type React from 'react';
 
-import Link from 'next/link';
+import NextLink from 'next/link';
+import { useRouter } from 'next/navigation';
 
-type PressLinkProps = Omit<React.ComponentProps<typeof Link>, 'href'> & {
+type PressLinkProps = Omit<React.ComponentProps<typeof NextLink>, 'onMouseDown' | 'href'> & {
   href: string;
 };
 
 export function PressLink({ href, target, children, ...props }: PressLinkProps): React.JSX.Element {
+  const router = useRouter();
   const isExternal = target === '_blank';
 
   if (isExternal) {
     return (
-      <Link
+      <NextLink
         href={href}
         target={target}
         onPointerDown={() => { window.open(href, '_blank'); }}
@@ -21,13 +23,32 @@ export function PressLink({ href, target, children, ...props }: PressLinkProps):
         {...props}
       >
         {children}
-      </Link>
+      </NextLink>
     );
   }
 
   return (
-    <Link href={href} target={target} {...props}>
+    <NextLink
+      href={href}
+      target={target}
+      prefetch={true}
+      onMouseDown={(e) => {
+        const url = new URL(href, window.location.href);
+        if (
+          url.origin === window.location.origin &&
+          e.button === 0 &&
+          !e.altKey &&
+          !e.ctrlKey &&
+          !e.metaKey &&
+          !e.shiftKey
+        ) {
+          e.preventDefault();
+          router.push(href);
+        }
+      }}
+      {...props}
+    >
       {children}
-    </Link>
+    </NextLink>
   );
 }
