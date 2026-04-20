@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
@@ -21,34 +21,10 @@ function getEmbedSrc(album: Album): string {
 }
 
 function AlbumCard({ album }: { album: Album }): React.JSX.Element {
-  const [preload, setPreload] = useState(false);
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const src = getEmbedSrc(album);
-  const showIframe = preload || open;
-
-  // Start preloading when the card scrolls into view
-  useEffect(() => {
-    const el = cardRef.current;
-    if (el == null || preload) { return; }
-    const observer = new IntersectionObserver(
-      ([entry]: IntersectionObserverEntry[]) => {
-        if (entry.isIntersecting) {
-          setPreload(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(el);
-    return (): void => { observer.disconnect(); };
-  }, [preload]);
-
-  const handleHover = useCallback(() => {
-    setPreload(true);
-  }, []);
 
   function handleOpenChange(next: boolean): void {
     setOpen(next);
@@ -61,11 +37,9 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <motion.div
-          ref={cardRef}
           className="group cursor-pointer"
           whileHover={{ scale: 1.03, y: -6 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          onPointerEnter={handleHover}
           onPointerDown={() => { setOpen(true); }}
         >
           <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-white/[0.03] transition-all duration-500 hover:border-white/20 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
@@ -81,16 +55,6 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
           </div>
         </motion.div>
       </DialogTrigger>
-
-      {showIframe && !open && (
-        <iframe
-          src={src}
-          className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none"
-          aria-hidden="true"
-          tabIndex={-1}
-          title={`Preload ${album.title}`}
-        />
-      )}
 
       <DialogContent className="max-w-5xl border-none bg-transparent p-0 text-white shadow-none">
         <DialogTitle className="sr-only">
