@@ -1,7 +1,7 @@
 import type React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { getAlbums, getEvents } from '@/lib/queries';
+import { PressLink } from '@/components/ui/press-link';
 import { LiveHomeSections } from '@/components/homepage/live-home-sections';
 import { NewsletterSignup } from '@/components/homepage/newsletter-signup';
 
@@ -61,24 +61,24 @@ export default async function Home(): Promise<React.JSX.Element> {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:mt-12 sm:flex-row">
-            <Link
+            <PressLink
               href="/discography"
               className="group rounded-full border border-white bg-white px-7 py-3.5 text-[0.68rem] font-medium uppercase tracking-[0.32em] text-black transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_-20px_rgba(255,255,255,0.3)]"
             >
               Explore Releases
-            </Link>
-            <Link
+            </PressLink>
+            <PressLink
               href="/events"
               className="rounded-full border border-white/12 bg-white/[0.05] px-7 py-3.5 text-[0.68rem] font-medium uppercase tracking-[0.32em] text-white/70 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09] hover:text-white"
             >
               View Shows
-            </Link>
-            <Link
+            </PressLink>
+            <PressLink
               href="/contact"
               className="rounded-full border border-white/12 bg-white/[0.05] px-7 py-3.5 text-[0.68rem] font-medium uppercase tracking-[0.32em] text-white/70 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09] hover:text-white"
             >
               Booking Info
-            </Link>
+            </PressLink>
           </div>
 
           <div className="mt-12 grid w-full max-w-4xl gap-3 sm:mt-14 sm:grid-cols-3">
