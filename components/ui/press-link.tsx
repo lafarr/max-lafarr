@@ -4,7 +4,7 @@ import type React from 'react';
 
 import Link from 'next/link';
 
-type PressLinkProps = Omit<React.ComponentProps<typeof Link>, 'onPointerDown' | 'onClick' | 'href'> & {
+type PressLinkProps = Omit<React.ComponentProps<typeof Link>, 'href'> & {
   href: string;
 };
 
