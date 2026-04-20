@@ -102,20 +102,8 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
 export function AlbumShowcase({ albums }: AlbumShowcaseProps): React.JSX.Element {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-      {albums.map((album, i) => (
-        <motion.div
-          key={album.id}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{
-            duration: 0.6,
-            delay: i * 0.1,
-            ease: [0.21, 0.47, 0.32, 0.98],
-          }}
-        >
-          <AlbumCard album={album} />
-        </motion.div>
+      {albums.map((album) => (
+        <AlbumCard key={album.id} album={album} />
       ))}
     </div>
   );

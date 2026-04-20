@@ -5,7 +5,6 @@ import type React from "react";
 import { useState } from 'react';
 import { MapPin, Clock, ArrowUpDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { StaggerContainer, StaggerItem } from '@/components/animations';
 import { TicketButton } from '@/components/events/ticket-button';
 import type { Event } from '@/lib/queries';
 
@@ -39,9 +38,9 @@ export function EventList({ events }: EventListProps): React.JSX.Element {
         </button>
       </div>
 
-      <StaggerContainer className="space-y-4" staggerDelay={0.1}>
+      <div className="space-y-4">
         {sorted.map((event) => (
-          <StaggerItem key={event.id}>
+          <div key={event.id}>
             <Card className="group relative overflow-hidden rounded-[1.5rem] border-white/8 bg-white/[0.02] py-0 text-white transition-all duration-500 hover:border-white/15 hover:bg-white/[0.04]">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_left,hsl(38_55%_55%/0.04),transparent_50%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               <CardContent className="p-0">
@@ -79,9 +78,9 @@ export function EventList({ events }: EventListProps): React.JSX.Element {
                 </div>
               </CardContent>
             </Card>
-          </StaggerItem>
+          </div>
         ))}
-      </StaggerContainer>
+      </div>
     </div>
   );
 }

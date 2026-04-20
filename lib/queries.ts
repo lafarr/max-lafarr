@@ -34,7 +34,7 @@ export const getAlbums = unstable_cache(
     return sortAlbumsByReleaseDateDesc(data);
   },
   ['albums'],
-  { tags: ['albums'] }
+  { tags: ['albums'], }
 );
 
 export const getAlbumById = unstable_cache(
@@ -43,7 +43,7 @@ export const getAlbumById = unstable_cache(
     return album == null ? [] : [album];
   },
   ['album-by-id'],
-  { tags: ['albums'] }
+  { tags: ['albums'], }
 );
 
 export const getEvents = unstable_cache(
@@ -51,7 +51,7 @@ export const getEvents = unstable_cache(
     return await fetchQuery(api.music.listEvents);
   },
   ['events'],
-  { tags: ['events'] }
+  { tags: ['events'], }
 );
 
 export const getEventById = unstable_cache(
@@ -59,7 +59,7 @@ export const getEventById = unstable_cache(
     return await fetchQuery(api.music.getEventById, { legacy_id: id }) ?? undefined;
   },
   ['event-by-id'],
-  { tags: ['events'] }
+  { tags: ['events'], }
 );
 
 export const getSubData = unstable_cache(
@@ -67,5 +67,5 @@ export const getSubData = unstable_cache(
     return await fetchQuery(api.music.listSubscribers);
   },
   ['subscribers'],
-  { tags: ['subscribers'] }
+  { tags: ['subscribers'], }
 );

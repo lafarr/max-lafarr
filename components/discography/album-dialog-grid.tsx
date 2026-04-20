@@ -5,7 +5,6 @@ import type React from "react";
 import { useState } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { StaggerContainer, StaggerItem } from '@/components/animations';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import type { Album } from '@/lib/queries';
@@ -103,12 +102,10 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
 
 export function AlbumDialogGrid({ albums }: AlbumDialogGridProps): React.JSX.Element {
   return (
-    <StaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {albums.map((album) => (
-        <StaggerItem key={album.id}>
-          <AlbumCard album={album} />
-        </StaggerItem>
+        <AlbumCard key={album.id} album={album} />
       ))}
-    </StaggerContainer>
+    </div>
   );
 }
