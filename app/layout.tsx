@@ -50,11 +50,7 @@ export default function RootLayout({
 }>): React.JSX.Element {
   return (
     <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://open.spotify.com" />
-        <link rel="preconnect" href="https://w.soundcloud.com" />
-      </head>
-      <body className={`${anton.variable} ${poppins.variable} font-poppins`}>
+<body className={`${anton.variable} ${poppins.variable} font-poppins`}>
         <ConvexClientProvider>
           <Navbar />
           {children}

@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { motion } from 'framer-motion';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -20,7 +19,6 @@ const formSchema = z.object({
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
-const ease = [0.21, 0.47, 0.32, 0.98] as [number, number, number, number];
 const inputClassName = 'h-14 rounded-[1.25rem] border border-white/8 bg-white/[0.02] px-4 text-white placeholder:text-zinc-600 transition-all duration-300 focus-visible:border-white/20 focus-visible:ring-0 focus-visible:shadow-[0_0_30px_-10px_hsl(38,55%,55%,0.1)]';
 const textareaClassName = 'min-h-40 rounded-[1.25rem] border border-white/8 bg-white/[0.02] px-4 py-4 text-white placeholder:text-zinc-600 transition-all duration-300 focus-visible:border-white/20 focus-visible:ring-0 focus-visible:shadow-[0_0_30px_-10px_hsl(38,55%,55%,0.1)]';
 
@@ -55,98 +53,69 @@ export function ContactForm(): React.JSX.Element {
       <Form {...form}>
         <form onSubmit={(event) => { void form.handleSubmit(onSubmit)(event).catch(() => undefined); }} className="space-y-8">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4, ease }}
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your name" {...field} className={inputClassName} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </motion.div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your name" {...field} className={inputClassName} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5, ease }}
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="your@email.com" {...field} className={inputClassName} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </motion.div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="your@email.com" {...field} className={inputClassName} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6, ease }}
-          >
-            <FormField
-              control={form.control}
-              name="subject"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Subject</FormLabel>
-                  <FormControl>
-                    <Input placeholder="What&apos;s this about?" {...field} className={inputClassName} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </motion.div>
+          <FormField
+            control={form.control}
+            name="subject"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="What&apos;s this about?" {...field} className={inputClassName} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7, ease }}
-          >
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Message</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell me what you have in mind..."
-                      {...field}
-                      rows={6}
-                      className={textareaClassName}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </motion.div>
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="mb-2 block text-xs uppercase tracking-[0.28em] text-zinc-600">Message</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Tell me what you have in mind..."
+                    {...field}
+                    rows={6}
+                    className={textareaClassName}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8, ease }}
-            className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between"
-          >
+          <div className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs uppercase tracking-[0.28em] text-zinc-600">Response times may vary during tour weeks.</p>
             <Button
               type="submit"
@@ -155,7 +124,7 @@ export function ContactForm(): React.JSX.Element {
             >
               {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
             </Button>
-          </motion.div>
+          </div>
         </form>
       </Form>
     </div>

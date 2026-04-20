@@ -20,7 +20,7 @@ function getEmbedSrc(album: Album): string {
   return `https://open.spotify.com/embed/album/${album.streaming_link}`;
 }
 
-function AlbumCard({ album }: { album: Album }): React.JSX.Element {
+function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -50,7 +50,9 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                 width={500}
                 height={500}
-                loading="eager"
+                priority={priority}
+                loading={priority === true ? undefined : 'eager'}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </div>
           </div>
@@ -103,8 +105,8 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
 export function AlbumDialogGrid({ albums }: AlbumDialogGridProps): React.JSX.Element {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {albums.map((album) => (
-        <AlbumCard key={album.id} album={album} />
+      {albums.map((album, i) => (
+        <AlbumCard key={album.id} album={album} priority={i === 0} />
       ))}
     </div>
   );

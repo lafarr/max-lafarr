@@ -168,64 +168,48 @@ export default function Navbar(): React.JSX.Element {
                       const isActive = pathname === link.href;
 
                       return (
-                        <motion.div
+                        <Link
                           key={link.href}
-                          initial={{ opacity: 0, x: 32 }}
-                          animate={isOpen ? { opacity: 1, x: 0 } : { opacity: 0, x: 32 }}
-                          transition={{
-                            duration: 0.35,
-                            delay: i * 0.07,
-                            ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number],
-                          }}
+                          href={link.href}
+                          prefetch={true}
+                          aria-current={isActive ? 'page' : undefined}
+                          onMouseDown={(e) => { handleNavMouseDown(e, link.href); setIsOpen(false); }}
+                          onClick={() => { setIsOpen(false); }}
+                          className={cn(
+                            'flex items-center justify-between rounded-[1.4rem] border px-5 py-4 transition-all duration-300',
+                            isActive
+                              ? 'border-white/20 bg-white text-black shadow-[0_20px_45px_-30px_rgba(255,255,255,0.95)]'
+                              : 'border-white/10 bg-white/[0.03] text-white hover:border-white/20 hover:bg-white/[0.06]'
+                          )}
                         >
-                          <Link
-                            href={link.href}
-                            prefetch={true}
-                            aria-current={isActive ? 'page' : undefined}
-                            onMouseDown={(e) => { handleNavMouseDown(e, link.href); setIsOpen(false); }}
-                            onClick={() => { setIsOpen(false); }}
+                          <span className="text-lg font-medium tracking-[0.2em]">{link.label}</span>
+                          <span
                             className={cn(
-                              'flex items-center justify-between rounded-[1.4rem] border px-5 py-4 transition-all duration-300',
-                              isActive
-                                ? 'border-white/20 bg-white text-black shadow-[0_20px_45px_-30px_rgba(255,255,255,0.95)]'
-                                : 'border-white/10 bg-white/[0.03] text-white hover:border-white/20 hover:bg-white/[0.06]'
+                              'text-[0.65rem] tracking-[0.34em]',
+                              isActive ? 'text-black/60' : 'text-white/35'
                             )}
                           >
-                            <span className="text-lg font-medium tracking-[0.2em]">{link.label}</span>
-                            <span
-                              className={cn(
-                                'text-[0.65rem] tracking-[0.34em]',
-                                isActive ? 'text-black/60' : 'text-white/35'
-                              )}
-                            >
-                              0{i + 1}
-                            </span>
-                          </Link>
-                        </motion.div>
+                            0{i + 1}
+                          </span>
+                        </Link>
                       );
                     })}
                   </nav>
 
                   <div className="space-y-8">
                     <div className="flex items-center gap-3">
-                      {socialLinks.map((s, i) => (
-                        <motion.div
+                      {socialLinks.map((s) => (
+                        <Link
                           key={s.label}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                          transition={{ duration: 0.35, delay: navLinks.length * 0.07 + i * 0.06 }}
+                          href={s.href}
+                          target="_blank"
+                          onPointerDown={() => { window.open(s.href, '_blank'); }}
+                          onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}
+                          className="flex size-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
                         >
-                          <Link
-                            href={s.href}
-                            target="_blank"
-                            onPointerDown={() => { window.open(s.href, '_blank'); }}
-                            onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}
-                            className="flex size-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/70 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
-                          >
-                            {s.icon}
-                            <span className="sr-only">{s.label}</span>
-                          </Link>
-                        </motion.div>
+                          {s.icon}
+                          <span className="sr-only">{s.label}</span>
+                        </Link>
                       ))}
                     </div>
 
