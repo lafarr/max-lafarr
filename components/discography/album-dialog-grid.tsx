@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { StaggerContainer, StaggerItem } from '@/components/animations';
@@ -25,18 +25,44 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
   const [preload, setPreload] = useState(false);
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const src = getEmbedSrc(album);
   const showIframe = preload || open;
+
+  // Start preloading when the card scrolls into view
+  useEffect(() => {
+    const el = cardRef.current;
+    if (el == null || preload) { return; }
+    const observer = new IntersectionObserver(
+      ([entry]: IntersectionObserverEntry[]) => {
+        if (entry.isIntersecting) {
+          setPreload(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    return (): void => { observer.disconnect(); };
+  }, [preload]);
 
   const handleHover = useCallback(() => {
     setPreload(true);
   }, []);
 
+  function handleOpenChange(next: boolean): void {
+    setOpen(next);
+    if (!next) {
+      setLoaded(false);
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <motion.div
+          ref={cardRef}
           className="group cursor-pointer"
           whileHover={{ scale: 1.03, y: -6 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -73,10 +99,26 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
           {album.title}
         </DialogTitle>
         <div>
-          <div className="relative w-full overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/50 p-2">
+          <div className="relative w-full overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/90 p-2">
             {!loaded && (
-              <div className="absolute inset-2 flex items-center justify-center rounded-[1rem] bg-zinc-900/80" style={{ height: 500 }}>
-                <Loader2 className="h-8 w-8 text-zinc-500 animate-spin" />
+              <div className="absolute inset-2 flex flex-col items-center justify-center gap-5 rounded-[1rem] bg-zinc-950" style={{ height: 500 }}>
+                <div className="relative h-28 w-28 overflow-hidden rounded-2xl shadow-2xl">
+                  <Image
+                    src={album.album_cover ?? ''}
+                    alt=""
+                    width={112}
+                    height={112}
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 animate-pulse bg-white/[0.06]" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm font-medium tracking-[0.1em] text-white/80">{album.title}</p>
+                  <div className="flex items-center gap-2 text-xs text-white/40">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span className="tracking-[0.2em] uppercase">Loading {album.streaming_platform === 'soundcloud' ? 'SoundCloud' : 'Spotify'}</span>
+                  </div>
+                </div>
               </div>
             )}
             <iframe
@@ -84,7 +126,7 @@ function AlbumCard({ album }: { album: Album }): React.JSX.Element {
               width="100%"
               height="500"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              className="rounded-[1rem] border-0"
+              className={`rounded-[1rem] border-0 transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
               title={`${album.title} on ${album.streaming_platform === 'soundcloud' ? 'SoundCloud' : 'Spotify'}`}
               onLoad={() => { setLoaded(true); }}
             />
