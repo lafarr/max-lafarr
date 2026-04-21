@@ -30,7 +30,7 @@ export function EventList({ events }: EventListProps): React.JSX.Element {
       <div className="mb-6 flex justify-end">
         <button
           type="button"
-          onMouseDown={() => { setAscending((v) => !v); }}
+          onClick={() => { setAscending((v) => !v); }}
           className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[0.68rem] uppercase tracking-[0.28em] text-zinc-400 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
         >
           <ArrowUpDown className="h-3.5 w-3.5" />
