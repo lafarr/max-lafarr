@@ -137,8 +137,6 @@ export default function Navbar(): React.JSX.Element {
                 <Link
                   href={s.href}
                   target="_blank"
-                  onPointerDown={() => { window.open(s.href, '_blank'); }}
-                  onClick={(e) => { if (e.detail > 0) { e.preventDefault(); } }}
                   className="flex size-9 items-center justify-center rounded-full text-white/70 transition-colors duration-300 hover:bg-white/[0.08] hover:text-white"
                 >
                   {s.icon}

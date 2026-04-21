@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
@@ -23,6 +23,7 @@ function getEmbedSrc(album: Album): string {
 function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const lastPointerType = useRef('');
 
   const src = getEmbedSrc(album);
 
@@ -40,7 +41,8 @@ function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): R
           className="group cursor-pointer"
           whileHover={{ scale: 1.03, y: -6 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          onPointerDown={() => { setOpen(true); }}
+          onPointerDown={(e) => { lastPointerType.current = e.pointerType; if (e.pointerType !== 'touch') { setOpen(true); } }}
+          onClick={() => { if (lastPointerType.current === 'touch') { setOpen(true); } }}
         >
           <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-white/[0.03] transition-all duration-500 hover:border-white/20 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
             <div className="relative aspect-square overflow-hidden">
