@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Html, Head, Body, Preview, Container, Section, Text, Link, Hr } from '@react-email/components';
+import { Html, Head, Body, Preview, Container, Section, Text, Hr } from '@react-email/components';
 
 type NewEventEmailProps = {
   eventName: string;
@@ -123,7 +123,7 @@ export function NewEventEmail({
             {/* CTA */}
             <Section style={{ paddingTop: '28px' }}>
               {ticketLink != null && ticketLink !== '' ? (
-                <Link
+                <a
                   href={ticketLink}
                   style={{
                     display: 'inline-block',
@@ -141,9 +141,9 @@ export function NewEventEmail({
                   }}
                 >
                   Get Tickets
-                </Link>
+                </a>
               ) : (
-                <Link
+                <a
                   href="https://maxlafarr.com/events"
                   style={{
                     display: 'inline-block',
@@ -160,7 +160,7 @@ export function NewEventEmail({
                   }}
                 >
                   View Details
-                </Link>
+                </a>
               )}
             </Section>
 
@@ -172,12 +172,12 @@ export function NewEventEmail({
             <Text style={{ margin: '0 0 12px', fontSize: '12px', color: gray, lineHeight: '1.6', fontFamily: font }}>
               You're receiving this because you subscribed to Max LaFarr updates.
             </Text>
-            <Link
+            <a
               href={unsubscribeUrl}
               style={{ fontSize: '11px', color: amberDim, textDecoration: 'underline', fontFamily: font }}
             >
               Unsubscribe
-            </Link>
+            </a>
           </Section>
 
         </Container>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Html, Head, Body, Preview, Container, Section, Text, Link, Img, Hr } from '@react-email/components';
+import { Html, Head, Body, Preview, Container, Section, Text, Img, Hr } from '@react-email/components';
 
 type NewAlbumEmailProps = {
   albumTitle: string;
@@ -76,7 +76,7 @@ export function NewAlbumEmail({
 
               {/* CTA */}
               <Section style={{ paddingBottom: '36px' }}>
-                <Link
+                <a
                   href={listenUrl}
                   style={{
                     display: 'inline-block',
@@ -93,7 +93,7 @@ export function NewAlbumEmail({
                   }}
                 >
                   Listen Now
-                </Link>
+                </a>
               </Section>
             </Section>
           </Section>
@@ -104,12 +104,12 @@ export function NewAlbumEmail({
             <Text style={{ margin: '0 0 12px', fontSize: '12px', color: gray, lineHeight: '1.6', fontFamily: font }}>
               You're receiving this because you subscribed to Max LaFarr updates.
             </Text>
-            <Link
+            <a
               href={unsubscribeUrl}
               style={{ fontSize: '11px', color: amberDim, textDecoration: 'underline', fontFamily: font }}
             >
               Unsubscribe
-            </Link>
+            </a>
           </Section>
 
         </Container>
