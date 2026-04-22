@@ -13,24 +13,23 @@ type PressLinkProps = Omit<React.ComponentProps<typeof NextLink>, 'onPointerDown
 export function PressLink({ href, target, children, ...props }: PressLinkProps): React.JSX.Element {
   const router = useRouter();
   const isExternal = target === '_blank';
-  const lastPointerType = useRef('');
+  const actedInPointerDown = useRef(false);
 
   function handlePointerDown(e: React.PointerEvent<HTMLAnchorElement>): void {
-    lastPointerType.current = e.pointerType;
-    // Touch devices: skip immediate navigation — let onClick handle it after a confirmed tap
+    actedInPointerDown.current = false;
     if (e.pointerType === 'touch') { return; }
 
     const url = new URL(href, window.location.href);
     const isInternal = url.origin === window.location.origin;
 
     if (e.button === 1 || (e.button === 0 && (e.ctrlKey || e.metaKey))) {
-      // Middle-click or Ctrl/Cmd+click → new tab
       e.preventDefault();
       window.open(href, '_blank');
+      actedInPointerDown.current = true;
     } else if (e.button === 0 && e.shiftKey) {
-      // Shift+click → new window
       e.preventDefault();
       window.open(href);
+      actedInPointerDown.current = true;
     } else if (e.button === 0 && !e.altKey) {
       e.preventDefault();
       if (isInternal && !isExternal) {
@@ -38,14 +37,18 @@ export function PressLink({ href, target, children, ...props }: PressLinkProps):
       } else {
         window.open(href, isExternal ? '_blank' : '_self');
       }
+      actedInPointerDown.current = true;
     }
   }
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>): void {
-    // Touch tap or keyboard (Enter): let Next.js Link navigate naturally
-    if (lastPointerType.current === 'touch' || e.detail === 0) { return; }
-    // Mouse/pen: already navigated in pointerdown, suppress the redundant click
-    e.preventDefault();
+    if (actedInPointerDown.current) {
+      // Mouse: already navigated in pointerdown, suppress the click
+      actedInPointerDown.current = false;
+      e.preventDefault();
+      return;
+    }
+    // Touch or keyboard: let Next.js Link navigate naturally
   }
 
   return (

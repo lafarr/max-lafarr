@@ -23,7 +23,7 @@ function getEmbedSrc(album: Album): string {
 function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const lastPointerType = useRef('');
+  const actedInPointerDown = useRef(false);
 
   const src = getEmbedSrc(album);
 
@@ -41,8 +41,8 @@ function AlbumCard({ album, priority }: { album: Album; priority?: boolean }): R
           className="group cursor-pointer"
           whileHover={{ scale: 1.03, y: -6 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          onPointerDown={(e) => { lastPointerType.current = e.pointerType; if (e.pointerType !== 'touch') { setOpen(true); } }}
-          onClick={() => { if (lastPointerType.current === 'touch') { setOpen(true); } }}
+          onPointerDown={(e) => { actedInPointerDown.current = false; if (e.pointerType !== 'touch') { setOpen(true); actedInPointerDown.current = true; } }}
+          onClick={() => { if (!actedInPointerDown.current) { setOpen(true); } actedInPointerDown.current = false; }}
         >
           <div className="relative overflow-hidden rounded-[1.4rem] border border-white/8 bg-white/[0.03] transition-all duration-500 hover:border-white/20 hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
             <div className="relative aspect-square overflow-hidden">

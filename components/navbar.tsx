@@ -43,29 +43,33 @@ export default function Navbar(): React.JSX.Element {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const lastNavPointerType = useRef('');
+  const navActed = useRef(false);
 
   function handleNavPointerDown(e: React.PointerEvent<HTMLAnchorElement>, href: string): void {
-    lastNavPointerType.current = e.pointerType;
-    // Touch: skip — let onClick handle after a confirmed tap (prevents scroll misfires)
+    navActed.current = false;
     if (e.pointerType === 'touch') { return; }
     if (e.button === 1 || (e.button === 0 && (e.ctrlKey || e.metaKey))) {
       e.preventDefault();
       window.open(href, '_blank');
+      navActed.current = true;
     } else if (e.button === 0 && e.shiftKey) {
       e.preventDefault();
       window.open(href);
+      navActed.current = true;
     } else if (e.button === 0 && !e.altKey) {
       e.preventDefault();
       router.push(href);
+      navActed.current = true;
     }
   }
 
   function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>): void {
-    // Touch tap or keyboard: let Next.js Link navigate naturally
-    if (lastNavPointerType.current === 'touch' || e.detail === 0) { return; }
-    // Mouse/pen: already navigated in pointerdown
-    e.preventDefault();
+    if (navActed.current) {
+      navActed.current = false;
+      e.preventDefault();
+      return;
+    }
+    // Touch or keyboard: let Next.js Link navigate naturally
   }
 
   useEffect(() => {
@@ -137,8 +141,8 @@ export default function Navbar(): React.JSX.Element {
                 <Link
                   href={s.href}
                   target="_blank"
-                  onPointerDown={(e) => { lastNavPointerType.current = e.pointerType; if (e.pointerType !== 'touch') { window.open(s.href, '_blank'); } }}
-                  onClick={(e) => { if (lastNavPointerType.current !== 'touch') { e.preventDefault(); } }}
+                  onPointerDown={(e) => { if (e.pointerType !== 'touch') { navActed.current = true; window.open(s.href, '_blank'); } else { navActed.current = false; } }}
+                  onClick={(e) => { if (navActed.current) { navActed.current = false; e.preventDefault(); } }}
                   className="flex size-9 items-center justify-center rounded-full text-white/70 transition-colors duration-300 hover:bg-white/[0.08] hover:text-white"
                 >
                   {s.icon}
