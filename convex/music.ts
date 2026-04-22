@@ -299,6 +299,20 @@ export const deleteSubscriberById = mutation({
   },
 });
 
+export const deleteSubscriberByEmail = mutation({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const subscriber = await ctx.db
+      .query('subscribers')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .unique();
+
+    if (subscriber == null) { return; } // already unsubscribed — silently succeed
+
+    await ctx.db.delete(subscriber._id);
+  },
+});
+
 export const importFromSupabase = mutation({
   args: {
     albums: v.array(v.object({

@@ -1,10 +1,11 @@
 'use server';
 
-import { fetchMutation } from 'convex/nextjs';
+import { fetchMutation, fetchQuery } from 'convex/nextjs';
 import { revalidateTag } from 'next/cache';
 import { api } from '@/convex/_generated/api';
 import { auth } from '@/auth';
 import { UTApi } from 'uploadthing/server';
+import { notifyNewAlbum, notifyNewEvent } from './mailer';
 import {
   getAlbums as _getAlbums,
   getAlbumById as _getAlbumById,
@@ -60,6 +61,14 @@ export async function createEvent(formData: {
   await requireAdminSession();
   await fetchMutation(api.music.createEvent, formData);
   revalidateTag('events');
+
+  try {
+    const subs = await fetchQuery(api.music.listSubscribers);
+    const emails = subs.map((s) => s.email);
+    await notifyNewEvent(formData, emails);
+  } catch {
+    // email failures are non-fatal
+  }
 }
 
 export async function updateEventById(
@@ -109,6 +118,14 @@ export async function createAlbum(
   } catch (err) {
     await utapi.deleteFiles([fileKey]);
     throw err;
+  }
+
+  try {
+    const subs = await fetchQuery(api.music.listSubscribers);
+    const emails = subs.map((s) => s.email);
+    await notifyNewAlbum({ ...album, album_cover: fileUrl }, emails);
+  } catch {
+    // email failures are non-fatal
   }
 }
 
