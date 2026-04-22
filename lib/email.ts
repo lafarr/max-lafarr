@@ -21,21 +21,23 @@ export function verifyUnsubscribeToken(email: string, token: string): boolean {
   }
 }
 
-export function buildUnsubscribeUrl(email: string): string {
+export function buildUnsubscribeUrl(email: string, siteOrigin?: string): string {
   const token = generateUnsubscribeToken(email);
-  return `${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`;
+  const base = siteOrigin ?? SITE_URL;
+  return `${base}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${token}`;
 }
 
 export async function broadcastEmail(
   to: string[],
   subject: string,
   renderTemplate: (unsubUrl: string) => ReactElement,
+  siteOrigin?: string,
 ): Promise<void> {
   if (to.length === 0) { return; }
   const resend = new Resend(process.env.RESEND_API_KEY);
   await Promise.allSettled(
     to.map(async (email) => {
-      const html = await render(renderTemplate(buildUnsubscribeUrl(email)));
+      const html = await render(renderTemplate(buildUnsubscribeUrl(email, siteOrigin)));
       return await resend.emails.send({
         from: FROM_EMAIL,
         to: email,

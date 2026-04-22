@@ -2,6 +2,7 @@
 
 import { fetchMutation, fetchQuery } from 'convex/nextjs';
 import { revalidateTag } from 'next/cache';
+import { headers } from 'next/headers';
 import { api } from '@/convex/_generated/api';
 import { auth } from '@/auth';
 import { UTApi } from 'uploadthing/server';
@@ -63,9 +64,12 @@ export async function createEvent(formData: {
   revalidateTag('events');
 
   try {
+    const h = await headers();
+    const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'maxlafarr.com';
+    const proto = h.get('x-forwarded-proto') ?? 'https';
     const subs = await fetchQuery(api.music.listSubscribers);
     const emails = subs.map((s) => s.email);
-    await notifyNewEvent(formData, emails);
+    await notifyNewEvent(formData, emails, `${proto}://${host}`);
   } catch {
     // email failures are non-fatal
   }
@@ -121,9 +125,12 @@ export async function createAlbum(
   }
 
   try {
+    const h = await headers();
+    const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'maxlafarr.com';
+    const proto = h.get('x-forwarded-proto') ?? 'https';
     const subs = await fetchQuery(api.music.listSubscribers);
     const emails = subs.map((s) => s.email);
-    await notifyNewAlbum({ ...album, album_cover: fileUrl }, emails);
+    await notifyNewAlbum({ ...album, album_cover: fileUrl }, emails, `${proto}://${host}`);
   } catch {
     // email failures are non-fatal
   }

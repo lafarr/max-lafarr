@@ -12,6 +12,7 @@ export async function notifyNewAlbum(
     streaming_platform: string;
   },
   subscriberEmails: string[],
+  siteOrigin?: string,
 ): Promise<void> {
   await broadcastEmail(
     subscriberEmails,
@@ -26,6 +27,7 @@ export async function notifyNewAlbum(
         unsubscribeUrl={unsubUrl}
       />
     ),
+    siteOrigin,
   );
 }
 
@@ -38,6 +40,7 @@ export async function notifyNewEvent(
     ticket_link?: string;
   },
   subscriberEmails: string[],
+  siteOrigin?: string,
 ): Promise<void> {
   await broadcastEmail(
     subscriberEmails,
@@ -52,5 +55,6 @@ export async function notifyNewEvent(
         unsubscribeUrl={unsubUrl}
       />
     ),
+    siteOrigin,
   );
 }
