@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { render } from '@react-email/components';
 import { createHmac, timingSafeEqual } from 'crypto';
 import type { ReactElement } from 'react';
 
@@ -33,13 +34,14 @@ export async function broadcastEmail(
   if (to.length === 0) { return; }
   const resend = new Resend(process.env.RESEND_API_KEY);
   await Promise.allSettled(
-    to.map((email) =>
-      resend.emails.send({
+    to.map(async (email) => {
+      const html = await render(renderTemplate(buildUnsubscribeUrl(email)));
+      return await resend.emails.send({
         from: FROM_EMAIL,
         to: email,
         subject,
-        react: renderTemplate(buildUnsubscribeUrl(email)),
-      })
-    )
+        html,
+      });
+    })
   );
 }
