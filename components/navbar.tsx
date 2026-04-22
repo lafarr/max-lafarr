@@ -3,6 +3,7 @@
 import type React from "react";
 
 import Link from 'next/link';
+import { PressLink } from '@/components/ui/press-link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -138,16 +139,14 @@ export default function Navbar(): React.JSX.Element {
           <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] p-1.5 md:flex">
             {socialLinks.map((s) => (
               <motion.div key={s.label} whileHover={{ scale: 1.08, y: -1 }} whileTap={{ scale: 0.96 }}>
-                <Link
+                <PressLink
                   href={s.href}
                   target="_blank"
-                  onPointerDown={(e) => { if (e.pointerType !== 'touch') { navActed.current = true; window.open(s.href, '_blank'); } else { navActed.current = false; } }}
-                  onClick={(e) => { if (navActed.current) { navActed.current = false; e.preventDefault(); } }}
                   className="flex size-9 items-center justify-center rounded-full text-white/70 transition-colors duration-300 hover:bg-white/[0.08] hover:text-white"
                 >
                   {s.icon}
                   <span className="sr-only">{s.label}</span>
-                </Link>
+                </PressLink>
               </motion.div>
             ))}
           </div>
