@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MapPin, Clock, ArrowUpDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { TicketButton } from '@/components/events/ticket-button';
@@ -19,6 +19,7 @@ function formatDate(date: string): string {
 
 export function EventList({ events }: EventListProps): React.JSX.Element {
   const [ascending, setAscending] = useState(true);
+  const lastPointerType = useRef('');
 
   const sorted = [...events].sort((a, b) => {
     const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -30,7 +31,8 @@ export function EventList({ events }: EventListProps): React.JSX.Element {
       <div className="mb-6 flex justify-end">
         <button
           type="button"
-          onClick={() => { setAscending((v) => !v); }}
+          onPointerDown={(e) => { lastPointerType.current = e.pointerType; if (e.pointerType !== 'touch') { setAscending((v) => !v); } }}
+          onClick={() => { if (lastPointerType.current === 'touch') { setAscending((v) => !v); } }}
           className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[0.68rem] uppercase tracking-[0.28em] text-zinc-400 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
         >
           <ArrowUpDown className="h-3.5 w-3.5" />
