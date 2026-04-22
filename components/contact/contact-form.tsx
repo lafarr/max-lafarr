@@ -116,7 +116,6 @@ export function ContactForm(): React.JSX.Element {
           />
 
           <div className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs uppercase tracking-[0.28em] text-zinc-600">Response times may vary during tour weeks.</p>
             <Button
               type="submit"
               className="h-12 rounded-full border border-white bg-white px-8 text-[0.68rem] font-medium uppercase tracking-[0.32em] text-black transition-all duration-300 hover:bg-zinc-200 hover:shadow-[0_20px_50px_-20px_rgba(255,255,255,0.25)]"

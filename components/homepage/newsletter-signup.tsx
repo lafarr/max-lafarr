@@ -18,8 +18,8 @@ export function NewsletterSignup(): React.JSX.Element {
     try {
       await createSub(email);
       setEmail('');
-      toast.success('You\'re in', {
-        description: 'You\'ll be the first to know about new music and shows.',
+      toast.success("You're in", {
+        description: "You'll be the first to know about new music and shows.",
       });
     } catch {
       toast.error('Something went wrong', {
